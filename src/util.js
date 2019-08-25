@@ -43,3 +43,37 @@ export const convertToFullDate = (date) => {
 export const convertMinutesToMovieTimeFormat = (time) => {
   return `${Math.floor(time / 60)}h ${time % 60}m`;
 };
+
+export const getAmountOfDaysBeteweenToDates = (date1, date2) => {
+  const diffTime = Math.abs(date2.getTime() - date1.getTime());
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  return diffDays;
+};
+
+
+// Разное
+
+export const createElementsFromTemplateAndData = (items, getTemplate) => {
+  const templates = items.map((item) => getTemplate(item));
+
+  return templates.join(``).trim();
+};
+
+export const getFilters = (cards) => {
+
+  let isToWatch = 0;
+  let isWatched = 0;
+  let isFavorite = 0;
+
+  cards.forEach((card) => {
+    isToWatch += card.isToWatch;
+    isWatched += card.isWatched;
+    isFavorite += card.isFavorite;
+  });
+
+  return [
+    {title: `Watchlist`, count: isToWatch},
+    {title: `History`, count: isWatched},
+    {title: `Favorites`, count: isFavorite},
+  ];
+};

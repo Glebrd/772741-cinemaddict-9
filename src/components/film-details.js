@@ -1,4 +1,24 @@
-export const getFilmDetails = () => `<section class="film-details visually-hidden">
+import {createElementsFromTemplateAndData, getAmountOfDaysBeteweenToDates} from '../util.js';
+
+const getGenreMarkup = (genre) =>
+  `<span class="film-details__genre">${genre}</span>`;
+
+const getCommentMarkup = ({author, date, text, emoji}) =>
+  `<li class="film-details__comment">
+<span class="film-details__comment-emoji">
+  <img src="${emoji}" width="55" height="55" alt="emoji">
+</span>
+<div>
+  <p class="film-details__comment-text">${text}</p>
+  <p class="film-details__comment-info">
+    <span class="film-details__comment-author">${author}</span>
+    <span class="film-details__comment-day">${getAmountOfDaysBeteweenToDates(date, new Date())} days ago</span>
+    <button class="film-details__comment-delete">Delete</button>
+  </p>
+</div>
+</li>`;
+
+export const getFilmDetails = ({comments, genres, poster, age, originalTitle}) => `<section class="film-details visually-hidden">
   <form class="film-details__inner" action="" method="get">
     <div class="form-details__top-container">
       <div class="film-details__close">
@@ -6,16 +26,16 @@ export const getFilmDetails = () => `<section class="film-details visually-hidde
       </div>
       <div class="film-details__info-wrap">
         <div class="film-details__poster">
-          <img class="film-details__poster-img" src="./images/posters/the-great-flamarion.jpg" alt="">
+          <img class="film-details__poster-img" src="${poster}" alt="">
 
-          <p class="film-details__age">18+</p>
+          <p class="film-details__age">${age}+</p>
         </div>
 
         <div class="film-details__info">
           <div class="film-details__info-head">
             <div class="film-details__title-wrap">
               <h3 class="film-details__title">The Great Flamarion</h3>
-              <p class="film-details__title-original">Original: The Great Flamarion</p>
+              <p class="film-details__title-original">Original: ${originalTitle}</p>
             </div>
 
             <div class="film-details__rating">
@@ -51,9 +71,8 @@ export const getFilmDetails = () => `<section class="film-details visually-hidde
             <tr class="film-details__row">
               <td class="film-details__term">Genres</td>
               <td class="film-details__cell">
-                <span class="film-details__genre">Drama</span>
-                <span class="film-details__genre">Film-Noir</span>
-                <span class="film-details__genre">Mystery</span></td>
+              ${createElementsFromTemplateAndData(genres, getGenreMarkup)}
+              </td>
             </tr>
           </table>
 
@@ -80,58 +99,7 @@ export const getFilmDetails = () => `<section class="film-details visually-hidde
         <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">4</span></h3>
 
         <ul class="film-details__comments-list">
-          <li class="film-details__comment">
-            <span class="film-details__comment-emoji">
-              <img src="./images/emoji/smile.png" width="55" height="55" alt="emoji">
-            </span>
-            <div>
-              <p class="film-details__comment-text">Interesting setting and a good cast</p>
-              <p class="film-details__comment-info">
-                <span class="film-details__comment-author">Tim Macoveev</span>
-                <span class="film-details__comment-day">3 days ago</span>
-                <button class="film-details__comment-delete">Delete</button>
-              </p>
-            </div>
-          </li>
-          <li class="film-details__comment">
-            <span class="film-details__comment-emoji">
-              <img src="./images/emoji/sleeping.png" width="55" height="55" alt="emoji">
-            </span>
-            <div>
-              <p class="film-details__comment-text">Booooooooooring</p>
-              <p class="film-details__comment-info">
-                <span class="film-details__comment-author">John Doe</span>
-                <span class="film-details__comment-day">2 days ago</span>
-                <button class="film-details__comment-delete">Delete</button>
-              </p>
-            </div>
-          </li>
-          <li class="film-details__comment">
-            <span class="film-details__comment-emoji">
-              <img src="./images/emoji/puke.png" width="55" height="55" alt="emoji">
-            </span>
-            <div>
-              <p class="film-details__comment-text">Very very old. Meh</p>
-              <p class="film-details__comment-info">
-                <span class="film-details__comment-author">John Doe</span>
-                <span class="film-details__comment-day">2 days ago</span>
-                <button class="film-details__comment-delete">Delete</button>
-              </p>
-            </div>
-          </li>
-          <li class="film-details__comment">
-            <span class="film-details__comment-emoji">
-              <img src="./images/emoji/angry.png" width="55" height="55" alt="emoji">
-            </span>
-            <div>
-              <p class="film-details__comment-text">Almost two hours? Seriously?</p>
-              <p class="film-details__comment-info">
-                <span class="film-details__comment-author">John Doe</span>
-                <span class="film-details__comment-day">Today</span>
-                <button class="film-details__comment-delete">Delete</button>
-              </p>
-            </div>
-          </li>
+        ${createElementsFromTemplateAndData(comments, getCommentMarkup)}
         </ul>
 
         <div class="film-details__new-comment">

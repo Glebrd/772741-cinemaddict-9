@@ -1,9 +1,4 @@
 import {convertMinutesToMovieTimeFormat} from "../util";
-export const getCards = (items, getTemplate) => {
-  const templates = items.map((item) => getTemplate(item));
-
-  return templates.join(``).trim();
-};
 
 export const getCardMarkup = ({description, rating, poster, releaseDate, duration, genres}) => `<article class="film-card">
 <h3 class="film-card__title">The Dance of Life</h3>

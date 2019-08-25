@@ -80,9 +80,40 @@ const GENRES = [
   `Mystery`,
   `Comedy`,
   `Musical`,
-  `Cartoonh`,
+  `Cartoon`,
   `Western`,
 ];
+
+const COMMENTS = [
+  `Interesting setting and a good cast`,
+  `Booooooooooring`,
+  `Very very old. Meh`,
+  `Almost two hours? Seriously?`,
+];
+
+const EMOJIS = [
+  `./images/emoji/smile.png`,
+  `./images/emoji/puke.png`,
+  `./images/emoji/sleeping.png`,
+  `./images/emoji/trophy.png`,
+  `./images/emoji/angry.png`,
+];
+
+
+// Структура данных для комментария
+const getCommentData = () => ({
+  author: getRandomElementFromArray(DIRECTORS, getRandomNumber(MIN_NUMBER_OF_MOCK_ELEMENTS_IN_ARRAY, MAX_NUMBER_OF_MOCK_ELEMENTS_IN_ARRAY)),
+  date: getRandomDate(new Date(2000, 2, 22), new Date()),
+  text: getRandomElementFromArray(COMMENTS),
+  emoji: getRandomElementFromArray(EMOJIS),
+});
+
+// Структура данных для всех комментариев
+
+export const getCommentsData = () => {
+  return new Array(getRandomNumber(MIN_NUMBER_OF_MOCK_ELEMENTS_IN_ARRAY, MAX_NUMBER_OF_MOCK_ELEMENTS_IN_ARRAY)).fill(``).map(getCommentData);
+};
+
 
 // Структура данных для карточки
 const getCardData = () => ({
@@ -102,7 +133,7 @@ const getCardData = () => ({
   isToWatch: Boolean(Math.round(Math.random())),
   isWatched: Boolean(Math.round(Math.random())),
   isFavorite: Boolean(Math.round(Math.random())),
-  comments: 1,
+  comments: getCommentsData(),
 });
 
 // Структура данных для всех карточек
