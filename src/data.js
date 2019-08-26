@@ -166,7 +166,7 @@ export const getFiltersData = (cards) => {
 export const getUserRankData = (watched) => {
   let userRank = ``;
   if (watched >= 21) {
-    userRank = `Movie Buff`;
+    userRank = `movie buff`;
   } else if (watched >= 11) {
     userRank = `fan`;
   } else {
