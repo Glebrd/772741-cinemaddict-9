@@ -121,7 +121,7 @@ const getCardData = () => ({
   rating: (Math.random() * 10).toFixed(1),
   originalTitle: getRandomElementFromArray(MOVIE_TITLES),
   poster: getRandomElementFromArray(POSTERS),
-  director: getRandomElementsFromArray(DIRECTORS, getRandomNumber(MIN_NUMBER_OF_MOCK_ELEMENTS_IN_ARRAY, MAX_NUMBER_OF_MOCK_ELEMENTS_IN_ARRAY)),
+  director: getRandomElementFromArray(DIRECTORS),
   writers: getRandomElementsFromArray(WRITERS, getRandomNumber(MIN_NUMBER_OF_MOCK_ELEMENTS_IN_ARRAY, MAX_NUMBER_OF_MOCK_ELEMENTS_IN_ARRAY)),
   actors: getRandomElementsFromArray(ACTORS, getRandomNumber(MIN_NUMBER_OF_MOCK_ELEMENTS_IN_ARRAY, MAX_NUMBER_OF_MOCK_ELEMENTS_IN_ARRAY)),
   releaseDate: getRandomDate(new Date(1885, 2, 22), new Date()),
@@ -140,4 +140,37 @@ const getCardData = () => ({
 
 export const getCardsData = (count) => {
   return new Array(count).fill(``).map(getCardData);
+};
+
+// Структура данных для фильтров
+export const getFiltersData = (cards) => {
+
+  let isToWatch = 0;
+  let isWatched = 0;
+  let isFavorite = 0;
+
+  cards.forEach((card) => {
+    isToWatch += card.isToWatch;
+    isWatched += card.isWatched;
+    isFavorite += card.isFavorite;
+  });
+
+  return [
+    {title: `Watchlist`, count: isToWatch},
+    {title: `History`, count: isWatched},
+    {title: `Favorites`, count: isFavorite},
+  ];
+};
+
+// Звание пользователя
+export const getUserRankData = (watched) => {
+  let userRank = ``;
+  if (watched >= 21) {
+    userRank = `Movie Buff`;
+  } else if (watched >= 11) {
+    userRank = `fan`;
+  } else {
+    userRank = `novice`;
+  }
+  return userRank;
 };

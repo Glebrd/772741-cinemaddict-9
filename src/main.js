@@ -4,8 +4,8 @@ import {getSorting} from './components/sorting.js';
 import {getMenu} from './components/menu.js';
 import {getFilms} from './components/films.js';
 import {getFilmDetails} from './components/film-details.js';
-import {getCardsData} from "./data";
-import {createElementsFromTemplateAndData, getFilters} from './util.js';
+import {getCardsData, getFiltersData, getUserRankData} from "./data";
+import {createElementsFromTemplateAndData} from './util.js';
 import {getCardMarkup} from './components/card.js';
 
 const NUMBER_OF_CARDS = 16;
@@ -25,6 +25,7 @@ const sortByAmountOfComments = (data) => {
 const cards = getCardsData(NUMBER_OF_CARDS);
 const cardsSortedByRating = sortByRating(cards).slice(0, NUMBER_OF_TOP_RATED_FILMS);
 const cardsSortedByAmountOfComments = sortByAmountOfComments(cards).slice(0, NUMBER_OF_MOST_COMMENTED_FILMS);
+const filtersData = getFiltersData(cards);
 
 const addBlock = (container, markup) => {
   container.insertAdjacentHTML(`beforeend`, markup);
@@ -35,9 +36,9 @@ const main = document.querySelector(`.main`);
 const body = document.querySelector(`body`);
 
 // Форма поиска + Рейтинг пользователя
-addBlock(header, getSearchMarkup() + getUserRating());
+addBlock(header, getSearchMarkup() + getUserRating(getUserRankData(filtersData[filtersData.findIndex((element) => element.title === `History`)].count)));
 // Меню + Сортировка + Фильмы
-addBlock(main, getMenu(getFilters(cards)) + getSorting() + getFilms(cards.slice(0, NUMBER_OF_CARDS_PER_PAGE), cardsSortedByRating, cardsSortedByAmountOfComments));
+addBlock(main, getMenu(filtersData) + getSorting() + getFilms(cards.slice(0, NUMBER_OF_CARDS_PER_PAGE), cardsSortedByRating, cardsSortedByAmountOfComments));
 // Попап
 addBlock(body, getFilmDetails(cards[0]));
 

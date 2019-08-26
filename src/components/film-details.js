@@ -1,4 +1,4 @@
-import {createElementsFromTemplateAndData, getAmountOfDaysBeteweenToDates} from '../util.js';
+import {createElementsFromTemplateAndData, getAmountOfDaysBeteweenToDates, convertToFullDate, convertMinutesToMovieTimeFormat} from '../util.js';
 
 const getGenreMarkup = (genre) =>
   `<span class="film-details__genre">${genre}</span>`;
@@ -18,7 +18,7 @@ const getCommentMarkup = ({author, date, text, emoji}) =>
 </div>
 </li>`;
 
-export const getFilmDetails = ({comments, genres, poster, age, originalTitle}) => `<section class="film-details visually-hidden">
+export const getFilmDetails = ({comments, genres, poster, age, originalTitle, rating, director, writers, actors, releaseDate, duration, country, description}) => `<section class="film-details visually-hidden">
   <form class="film-details__inner" action="" method="get">
     <div class="form-details__top-container">
       <div class="film-details__close">
@@ -39,34 +39,34 @@ export const getFilmDetails = ({comments, genres, poster, age, originalTitle}) =
             </div>
 
             <div class="film-details__rating">
-              <p class="film-details__total-rating">8.9</p>
+              <p class="film-details__total-rating">${rating}</p>
             </div>
           </div>
 
           <table class="film-details__table">
             <tr class="film-details__row">
               <td class="film-details__term">Director</td>
-              <td class="film-details__cell">Anthony Mann</td>
+              <td class="film-details__cell">${director}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Writers</td>
-              <td class="film-details__cell">Anne Wigton, Heinz Herald, Richard Weil</td>
+              <td class="film-details__cell">${writers.join(`, `)}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Actors</td>
-              <td class="film-details__cell">Erich von Stroheim, Mary Beth Hughes, Dan Duryea</td>
+              <td class="film-details__cell">${actors.join(`, `)}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Release Date</td>
-              <td class="film-details__cell">30 March 1945</td>
+              <td class="film-details__cell">${convertToFullDate(releaseDate)}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Runtime</td>
-              <td class="film-details__cell">1h 18m</td>
+              <td class="film-details__cell">${convertMinutesToMovieTimeFormat(duration)}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Country</td>
-              <td class="film-details__cell">USA</td>
+              <td class="film-details__cell">${country}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Genres</td>
@@ -77,7 +77,7 @@ export const getFilmDetails = ({comments, genres, poster, age, originalTitle}) =
           </table>
 
           <p class="film-details__film-description">
-            The film opens following a murder at a cabaret in Mexico City in 1936, and then presents the events leading up to it in flashback. The Great Flamarion (Erich von Stroheim) is an arrogant, friendless, and misogynous marksman who displays his trick gunshot act in the vaudeville circuit. His show features a beautiful assistant, Connie (Mary Beth Hughes) and her drunken husband Al (Dan Duryea), Flamarion's other assistant. Flamarion falls in love with Connie, the movie's femme fatale, and is soon manipulated by her into killing her no good husband during one of their acts.
+          ${description}
           </p>
         </div>
       </div>
@@ -96,7 +96,7 @@ export const getFilmDetails = ({comments, genres, poster, age, originalTitle}) =
 
     <div class="form-details__bottom-container">
       <section class="film-details__comments-wrap">
-        <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">4</span></h3>
+        <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
 
         <ul class="film-details__comments-list">
         ${createElementsFromTemplateAndData(comments, getCommentMarkup)}

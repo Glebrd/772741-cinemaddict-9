@@ -58,22 +58,3 @@ export const createElementsFromTemplateAndData = (items, getTemplate) => {
 
   return templates.join(``).trim();
 };
-
-export const getFilters = (cards) => {
-
-  let isToWatch = 0;
-  let isWatched = 0;
-  let isFavorite = 0;
-
-  cards.forEach((card) => {
-    isToWatch += card.isToWatch;
-    isWatched += card.isWatched;
-    isFavorite += card.isFavorite;
-  });
-
-  return [
-    {title: `Watchlist`, count: isToWatch},
-    {title: `History`, count: isWatched},
-    {title: `Favorites`, count: isFavorite},
-  ];
-};
