@@ -26,7 +26,7 @@ export const getRandomElementsFromArray = (array, numberOfElements) => {
   const arrayWithRandomElements = [];
 
   for (let i = 0; i < numberOfElements; i++) {
-    arrayWithRandomElements[i] = array[getRandomNumber(0, array.length - 1)];
+    arrayWithRandomElements[i] = getRandomElementFromArray(array);
   }
   return arrayWithRandomElements;
 };
