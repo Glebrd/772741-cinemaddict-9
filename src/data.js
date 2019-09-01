@@ -141,36 +141,3 @@ const getCardData = () => ({
 export const getCardsData = (count) => {
   return new Array(count).fill(``).map(getCardData);
 };
-
-// Структура данных для фильтров
-export const getFiltersData = (cards) => {
-
-  let isToWatch = 0;
-  let isWatched = 0;
-  let isFavorite = 0;
-
-  cards.forEach((card) => {
-    isToWatch += card.isToWatch;
-    isWatched += card.isWatched;
-    isFavorite += card.isFavorite;
-  });
-
-  return [
-    {title: `Watchlist`, count: isToWatch},
-    {title: `History`, count: isWatched},
-    {title: `Favorites`, count: isFavorite},
-  ];
-};
-
-// Звание пользователя
-export const getUserRankData = (watched) => {
-  let userRank = ``;
-  if (watched >= 21) {
-    userRank = `movie buff`;
-  } else if (watched >= 11) {
-    userRank = `fan`;
-  } else {
-    userRank = `novice`;
-  }
-  return userRank;
-};

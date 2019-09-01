@@ -23,4 +23,24 @@ export class Menu {
     <a href="#stats" class="main-navigation__item main-navigation__item--additional">Stats</a>
     </nav>`;
   }
+
+  // Расчёт для фильтров
+  static getFiltersCount(cards) {
+
+    let isToWatch = 0;
+    let isWatched = 0;
+    let isFavorite = 0;
+
+    cards.forEach((card) => {
+      isToWatch += card.isToWatch;
+      isWatched += card.isWatched;
+      isFavorite += card.isFavorite;
+    });
+
+    return [
+      {title: `Watchlist`, count: isToWatch},
+      {title: `History`, count: isWatched},
+      {title: `Favorites`, count: isFavorite},
+    ];
+  }
 }

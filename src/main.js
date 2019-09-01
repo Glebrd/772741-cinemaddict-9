@@ -4,7 +4,7 @@ import {Sorting} from './components/sorting.js';
 import {Menu} from './components/menu.js';
 import {Films} from './components/films.js';
 import {FilmDetails} from './components/film-details.js';
-import {getCardsData, getFiltersData, getUserRankData} from "./data.js";
+import {getCardsData} from "./data.js";
 import {render, unrender, onEscButtonPress} from './util.js';
 import {Card} from './components/card.js';
 import {ShowMoreButton} from './components/show-more-button.js';
@@ -26,7 +26,8 @@ const sortByAmountOfComments = (data) => {
 const cards = getCardsData(NUMBER_OF_CARDS);
 const cardsSortedByRating = sortByRating(cards).slice(0, NUMBER_OF_TOP_RATED_FILMS);
 const cardsSortedByAmountOfComments = sortByAmountOfComments(cards).slice(0, NUMBER_OF_MOST_COMMENTED_FILMS);
-const filtersData = getFiltersData(cards);
+const filtersCount = Menu.getFiltersCount(cards);
+const UserRank = UserRating.getUserRank(filtersCount[filtersCount.findIndex((element) => element.title === `History`)].count);
 
 // Для полседующей вставки компонентов
 const header = document.querySelector(`.header`);
@@ -34,8 +35,8 @@ const main = document.querySelector(`.main`);
 
 // Создаём экземпляры объектов (компонентов)
 const search = new Search();
-const userRating = new UserRating(getUserRankData(filtersData[filtersData.findIndex((element) => element.title === `History`)].count));
-const menu = new Menu(filtersData);
+const userRating = new UserRating(UserRank);
+const menu = new Menu(filtersCount);
 const sorting = new Sorting();
 const films = new Films();
 const showMoreButton = new ShowMoreButton();
