@@ -1,10 +1,5 @@
-import {createElement} from "../util";
-
-export class Search {
-  getElement() {
-    return createElement(this.getTemplate());
-  }
-
+import {AbstractComponent} from './abstract-component';
+export class Search extends AbstractComponent {
   getTemplate() {
     return `<form class="header__search search">
     <input type="text" name="search" class="search__field" placeholder="Search movies">

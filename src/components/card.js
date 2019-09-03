@@ -1,7 +1,9 @@
-import {convertMinutesToMovieTimeFormat, createElement} from "../util";
+import {convertMinutesToMovieTimeFormat} from "../util";
+import {AbstractComponent} from './abstract-component';
 
-export class Card {
+export class Card extends AbstractComponent {
   constructor({description, rating, poster, releaseDate, duration, genres, title, comments}) {
+    super();
     this._description = description;
     this._rating = rating;
     this._poster = poster;
@@ -10,14 +12,6 @@ export class Card {
     this._genres = genres;
     this._title = title;
     this._comments = comments;
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
   }
 
   getTemplate() {

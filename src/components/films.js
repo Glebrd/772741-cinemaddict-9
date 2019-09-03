@@ -1,10 +1,5 @@
-import {createElement} from "../util";
-
-export class Films {
-  getElement() {
-    return createElement(this.getTemplate());
-  }
-
+import {AbstractComponent} from './abstract-component';
+export class Films extends AbstractComponent {
   getTemplate() {
     return `<section class="films">
         <section class="films-list">
@@ -23,5 +18,12 @@ export class Films {
           </div>
         </section>
       </section>`;
+  }
+  static sortByRating(data) {
+    return data.slice().sort((a, b) => b.rating - a.rating);
+  }
+
+  static sortByAmountOfComments(data) {
+    return data.slice().sort((a, b) => b.comments.length - a.comments.length);
   }
 }
