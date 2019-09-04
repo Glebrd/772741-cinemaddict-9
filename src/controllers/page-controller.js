@@ -13,12 +13,9 @@ export class PageController {
   constructor(container, cards) {
     this._container = container;
     this._cards = cards;
-    this._NUMBER_OF_CARDS = 16;
     this._NUMBER_OF_CARDS_PER_PAGE = 5;
     this._NUMBER_OF_TOP_RATED_FILMS = 2;
     this._NUMBER_OF_MOST_COMMENTED_FILMS = 2;
-    this._cardsSortedByRating = Films.sortByRating(cards).slice(0, this._NUMBER_OF_TOP_RATED_FILMS);
-    this._cardsSortedByAmountOfComments = Films.sortByAmountOfComments(cards).slice(0, this._NUMBER_OF_MOST_COMMENTED_FILMS);
     this._filtersCount = Menu.getFiltersCount(cards);
     this._userRank = UserRating.getUserRank(this._filtersCount[this._filtersCount.findIndex((element) => element.title === `History`)].count);
     // Текущее количество карточек на странице
@@ -118,11 +115,13 @@ export class PageController {
     this._renderShowMoreButton();
     // Массово рендерим карточки фильмов
     // Берём данные карточек и отправляем их в функцию рендера.
+    const cardsSortedByRating = Films.sortByRating(this._cards).slice(0, this._NUMBER_OF_TOP_RATED_FILMS);
+    const cardsSortedByAmountOfComments = Films.sortByAmountOfComments(this._cards).slice(0, this._NUMBER_OF_MOST_COMMENTED_FILMS);
     const containerAllMovies = document.querySelector(`.films-list .films-list__container`);
     const containerTopRated = document.querySelector(`.films-list__container--top`);
     const containerMostCommented = document.querySelector(`.films-list__container--commented`);
     this._cards.slice(0, this._NUMBER_OF_CARDS_PER_PAGE).forEach((card) => this._renderCard(card, containerAllMovies));
-    this._cardsSortedByRating.forEach((card) => this._renderCard(card, containerTopRated));
-    this._cardsSortedByAmountOfComments.forEach((card) => this._renderCard(card, containerMostCommented));
+    cardsSortedByRating.forEach((card) => this._renderCard(card, containerTopRated));
+    cardsSortedByAmountOfComments.forEach((card) => this._renderCard(card, containerMostCommented));
   }
 }
