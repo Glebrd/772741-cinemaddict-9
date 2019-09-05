@@ -19,11 +19,23 @@ export class Films extends AbstractComponent {
         </section>
       </section>`;
   }
-  static sortByRating(data) {
-    return data.slice().sort((a, b) => b.rating - a.rating);
-  }
 
-  static sortByAmountOfComments(data) {
-    return data.slice().sort((a, b) => b.comments.length - a.comments.length);
+  static sort(data, sortType) {
+    let result = null;
+    switch (sortType) {
+      case `rating-down`:
+        result = data.slice().sort((a, b) => b.rating - a.rating);
+        break;
+      case `comments-down`:
+        result = data.slice().sort((a, b) => b.comments.length - a.comments.length);
+        break;
+      case `date-down`:
+        result = data.slice().sort((a, b) => b.releaseDate - a.releaseDate);
+        break;
+      case `default`:
+        result = data;
+        break;
+    }
+    return result;
   }
 }
