@@ -8,19 +8,19 @@ import {FilmDetails} from '../components/film-details.js';
 import {render, unrender, onEscButtonPress} from '../util.js';
 import {Card} from '../components/card.js';
 import {ShowMoreButton} from '../components/show-more-button.js';
+const NUMBER_OF_CARDS_PER_PAGE = 5;
+const NUMBER_OF_TOP_RATED_FILMS = 2;
+const NUMBER_OF_MOST_COMMENTED_FILMS = 2;
 
 
 export class PageController {
   constructor(container, cards) {
     this._container = container;
     this._cards = cards;
-    this._NUMBER_OF_CARDS_PER_PAGE = 5;
-    this._NUMBER_OF_TOP_RATED_FILMS = 2;
-    this._NUMBER_OF_MOST_COMMENTED_FILMS = 2;
     this._filtersCount = Menu.getFiltersCount(cards);
     this._userRank = UserRating.getUserRank(this._filtersCount[this._filtersCount.findIndex((element) => element.title === `History`)].count);
     // Текущее количество карточек на странице
-    this._currentNumberOfCardsOnPage = this._NUMBER_OF_CARDS_PER_PAGE;
+    this._currentNumberOfCardsOnPage = NUMBER_OF_CARDS_PER_PAGE;
     // Создаём экземпляры объектов (компонентов)
     this._search = new Search();
     this._userRating = new UserRating(this._userRank);
@@ -89,15 +89,15 @@ export class PageController {
   _renderShowMoreButton() {
     // Обработчик клика на кнопку showmore
     const onShowMoreButtonClick = () => {
-      this._cards.slice(this._currentNumberOfCardsOnPage, this._currentNumberOfCardsOnPage + this._NUMBER_OF_CARDS_PER_PAGE).forEach((card) => this._renderCard(card, document.querySelector(`.films-list .films-list__container`)));
-      this._currentNumberOfCardsOnPage += this._NUMBER_OF_CARDS_PER_PAGE;
+      this._cards.slice(this._currentNumberOfCardsOnPage, this._currentNumberOfCardsOnPage + NUMBER_OF_CARDS_PER_PAGE).forEach((card) => this._renderCard(card, document.querySelector(`.films-list .films-list__container`)));
+      this._currentNumberOfCardsOnPage += NUMBER_OF_CARDS_PER_PAGE;
       if (this._cards.length <= this._currentNumberOfCardsOnPage) {
         this._showMoreButton.getElement().removeEventListener(`click`, onShowMoreButtonClick);
         this._showMoreButton.removeElement();
       }
     };
     // Рендер кнопки showmore
-    if (this._cards.length > this._NUMBER_OF_CARDS_PER_PAGE) {
+    if (this._cards.length > NUMBER_OF_CARDS_PER_PAGE) {
       render(document.querySelector(`.films-list`), this._showMoreButton.getElement());
       this._showMoreButton.getElement().addEventListener(`click`, onShowMoreButtonClick);
     }
@@ -121,14 +121,14 @@ export class PageController {
       this._renderShowMoreButton();
       // Массово рендерим карточки фильмов
       // Берём данные карточек и отправляем их в функцию рендера.
-      const cardsSortedByRating = Films.sort(this._cards, `rating-down`);
-      const cardsSortedByAmountOfComments = Films.sort(this._cards, `comments-down`);
+      const cardsSortedByRating = Sorting.sort(this._cards, `rating-down`);
+      const cardsSortedByAmountOfComments = Sorting.sort(this._cards, `comments-down`);
       const containerAllMovies = document.querySelector(`.films-list .films-list__container`);
       const containerTopRated = document.querySelector(`.films-list__container--top`);
       const containerMostCommented = document.querySelector(`.films-list__container--commented`);
-      this._cards.slice(0, this._NUMBER_OF_CARDS_PER_PAGE).forEach((card) => this._renderCard(card, containerAllMovies));
-      cardsSortedByRating.slice(0, this._NUMBER_OF_TOP_RATED_FILMS).forEach((card) => this._renderCard(card, containerTopRated));
-      cardsSortedByAmountOfComments.slice(0, this._NUMBER_OF_MOST_COMMENTED_FILMS).forEach((card) => this._renderCard(card, containerMostCommented));
+      this._cards.slice(0, NUMBER_OF_CARDS_PER_PAGE).forEach((card) => this._renderCard(card, containerAllMovies));
+      cardsSortedByRating.slice(0, NUMBER_OF_TOP_RATED_FILMS).forEach((card) => this._renderCard(card, containerTopRated));
+      cardsSortedByAmountOfComments.slice(0, NUMBER_OF_MOST_COMMENTED_FILMS).forEach((card) => this._renderCard(card, containerMostCommented));
       // Обработчик клика по сортировке
       const onSortLinkClick = (evt) => {
         evt.preventDefault();
@@ -136,7 +136,7 @@ export class PageController {
           return;
         }
         containerAllMovies.innerHTML = ``;
-        Films.sort(this._cards, evt.target.dataset.sortType).slice(0, this._NUMBER_OF_CARDS_PER_PAGE).forEach((card) => this._renderCard(card, containerAllMovies));
+        Sorting.sort(this._cards, evt.target.dataset.sortType).slice(0, NUMBER_OF_CARDS_PER_PAGE).forEach((card) => this._renderCard(card, containerAllMovies));
         let sortingButtons = this._sorting.getElement().querySelectorAll(`.sort__button--active`);
         sortingButtons.forEach((sortingButton) => {
           if (sortingButton !== evt.target) {
