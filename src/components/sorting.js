@@ -1,10 +1,5 @@
-import {createElement} from "../util";
-
-export class Sorting {
-  getElement() {
-    return createElement(this.getTemplate());
-  }
-
+import {AbstractComponent} from './abstract-component';
+export class Sorting extends AbstractComponent {
   getTemplate() {
     return `<ul class="sort">
     <li><a href="#" class="sort__button sort__button--active">Sort by default</a></li>

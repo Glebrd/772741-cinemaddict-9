@@ -1,4 +1,5 @@
-import {createElementsFromTemplateAndData, getAmountOfDaysBeteweenToDates, convertToFullDate, convertMinutesToMovieTimeFormat, unrender, createElement} from '../util.js';
+import {createElementsFromTemplateAndData, getAmountOfDaysBeteweenToDates, convertToFullDate, convertMinutesToMovieTimeFormat} from '../util.js';
+import {AbstractComponent} from './abstract-component';
 
 const getGenreMarkup = (genre) =>
   `<span class="film-details__genre">${genre}</span>`;
@@ -18,8 +19,9 @@ const getCommentMarkup = ({author, date, text, emoji}) =>
 </div>
 </li>`;
 
-export class FilmDetails {
+export class FilmDetails extends AbstractComponent {
   constructor({title, comments, genres, poster, age, originalTitle, rating, director, writers, actors, releaseDate, duration, country, description}) {
+    super();
     this._title = title;
     this._comments = comments;
     this._genres = genres;
@@ -34,19 +36,6 @@ export class FilmDetails {
     this._duration = duration;
     this._country = country;
     this._description = description;
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    unrender(this._element);
-    this._element = null;
   }
 
   getTemplate() {
