@@ -31,22 +31,23 @@ export class PageController {
     this._onChangeView = this._onChangeView.bind(this);
     this._onDataChange = this._onDataChange.bind(this);
     this._subscriptions = [];
+    this._sortedCards = this._cards;
   }
 
   //* Для добавления карточек, по нажатию на кнопку showMoreButton
   // Добавление дополнтельных карточек на страницу (по нажатию на кнопку showMoreButton)
-  _renderShowMoreButton(currentCards) {
+  _renderShowMoreButton() {
     // Обработчик клика на кнопку showmore
     const onShowMoreButtonClick = () => {
-      currentCards.slice(this._currentNumberOfCardsOnPage, this._currentNumberOfCardsOnPage + NUMBER_OF_CARDS_PER_PAGE).forEach((card) => this._renderCard(card, document.querySelector(`.films-list .films-list__container`)));
+      this._sortedCards.slice(this._currentNumberOfCardsOnPage, this._currentNumberOfCardsOnPage + NUMBER_OF_CARDS_PER_PAGE).forEach((card) => this._renderCard(card, document.querySelector(`.films-list .films-list__container`)));
       this._currentNumberOfCardsOnPage += NUMBER_OF_CARDS_PER_PAGE;
-      if (currentCards.length <= this._currentNumberOfCardsOnPage) {
+      if (this._cards.length <= this._currentNumberOfCardsOnPage) {
         this._showMoreButton.getElement().removeEventListener(`click`, onShowMoreButtonClick);
         this._showMoreButton.removeElement();
       }
     };
     // Рендер кнопки showmore
-    if (this._cards.length > NUMBER_OF_CARDS_PER_PAGE) {
+    if (this._cards.length > this._currentNumberOfCardsOnPage) {
       render(document.querySelector(`.films-list`), this._showMoreButton.getElement());
       this._showMoreButton.getElement().addEventListener(`click`, onShowMoreButtonClick);
     }
@@ -59,9 +60,9 @@ export class PageController {
       return;
     }
     document.querySelector(`.films-list .films-list__container`).innerHTML = ``;
-    const sortedCards = Sorting.sort(this._cards, evt.target.dataset.sortType);
-    sortedCards.slice(0, this._currentNumberOfCardsOnPage).forEach((card) => this._renderCard(card, document.querySelector(`.films-list .films-list__container`)));
-    this.__renderShowMoreButton(sortedCards);
+    this._sortedCards = Sorting.sort(this._cards, evt.target.dataset.sortType);
+    this._sortedCards.slice(0, this._currentNumberOfCardsOnPage).forEach((card) => this._renderCard(card, document.querySelector(`.films-list .films-list__container`)));
+    // this.__renderShowMoreButton(this._sortedCards);
     let sortingButtons = this._sorting.getElement().querySelectorAll(`.sort__button--active`);
     sortingButtons.forEach((sortingButton) => {
       if (sortingButton !== evt.target) {
@@ -83,7 +84,7 @@ export class PageController {
       render(main, emptyFilms.getElement());
     } else {
       render(main, this._films.getElement());
-      this._renderShowMoreButton(this._cards);
+      this._renderShowMoreButton();
       // Массово рендерим карточки фильмов
       // Берём данные карточек и отправляем их в функцию рендера.
       const cardsSortedByRating = Sorting.sort(this._cards, `rating-down`);
@@ -91,7 +92,7 @@ export class PageController {
       const containerAllMovies = document.querySelector(`.films-list .films-list__container`);
       const containerTopRated = document.querySelector(`.films-list__container--top`);
       const containerMostCommented = document.querySelector(`.films-list__container--commented`);
-      this._cards.slice(0, NUMBER_OF_CARDS_PER_PAGE).forEach((card) => this._renderCard(card, containerAllMovies));
+      this._sortedCards.slice(0, this._currentNumberOfCardsOnPage).forEach((card) => this._renderCard(card, containerAllMovies));
       cardsSortedByRating.slice(0, NUMBER_OF_TOP_RATED_FILMS).forEach((card) => this._renderCard(card, containerTopRated));
       cardsSortedByAmountOfComments.slice(0, NUMBER_OF_MOST_COMMENTED_FILMS).forEach((card) => this._renderCard(card, containerMostCommented));
       // Добавляем обработчик события для сортировки
@@ -102,10 +103,10 @@ export class PageController {
   _onDataChange(newData, oldData) {
     console.log(oldData.isFavorite);
     console.log(newData.isFavorite);
-    this._cards[this._cards.findIndex((card) => card === oldData)] = newData;
+    this._sortedCards[this._sortedCards.findIndex((card) => card === oldData)] = newData;
     const renderedCards = document.querySelectorAll(`.film-card`);
     renderedCards.forEach((card) => unrender(card));
-    this._renderAllCards(this._cards);
+    this._renderAllCards(this._sortedCards);
   }
 
   _onChangeView() {
