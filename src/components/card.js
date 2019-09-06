@@ -1,8 +1,9 @@
 import {convertMinutesToMovieTimeFormat} from "../util";
 import {AbstractComponent} from './abstract-component';
 
+const checkActiveButton = (isActive) => isActive ? `film-card__controls-item--active` : ``;
 export class Card extends AbstractComponent {
-  constructor({description, rating, poster, releaseDate, duration, genres, title, comments}) {
+  constructor({description, rating, poster, releaseDate, duration, genres, title, comments, isToWatch, isWatched, isFavorite}) {
     super();
     this._description = description;
     this._rating = rating;
@@ -12,6 +13,9 @@ export class Card extends AbstractComponent {
     this._genres = genres;
     this._title = title;
     this._comments = comments;
+    this._isWatched = isWatched;
+    this._isToWatch = isToWatch;
+    this._isFavorite = isFavorite;
   }
 
   getTemplate() {
@@ -27,9 +31,9 @@ export class Card extends AbstractComponent {
     <p class="film-card__description">${this._description}</p>
     <a class="film-card__comments">${this._comments.length} comments</a>
     <form class="film-card__controls">
-      <button data-action-type="add-to-watchlist" class="film-card__controls-item button film-card__controls-item--add-to-watchlist">Add to watchlist</button>
-      <button data-action-type="mark-as-watched" class="film-card__controls-item button film-card__controls-item--mark-as-watched">Mark as watched</button>
-      <button data-action-type="favorite" class="film-card__controls-item button film-card__controls-item--favorite">Mark as favorite</button>
+      <button data-action-type="add-to-watchlist" class="film-card__controls-item button film-card__controls-item--add-to-watchlist ${checkActiveButton(this._isToWatch)}">Add to watchlist</button>
+      <button data-action-type="mark-as-watched" class="film-card__controls-item button film-card__controls-item--mark-as-watched ${checkActiveButton(this._isWatched)}">Mark as watched</button>
+      <button data-action-type="favorite" class="film-card__controls-item button film-card__controls-item--favorite ${checkActiveButton(this._isFavorite)}">Mark as favorite</button>
     </form>
     </article>`;
   }

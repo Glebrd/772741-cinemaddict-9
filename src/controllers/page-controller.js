@@ -35,12 +35,12 @@ export class PageController {
 
   //* Для добавления карточек, по нажатию на кнопку showMoreButton
   // Добавление дополнтельных карточек на страницу (по нажатию на кнопку showMoreButton)
-  _renderShowMoreButton() {
+  _renderShowMoreButton(currentCards) {
     // Обработчик клика на кнопку showmore
     const onShowMoreButtonClick = () => {
-      this._cards.slice(this._currentNumberOfCardsOnPage, this._currentNumberOfCardsOnPage + NUMBER_OF_CARDS_PER_PAGE).forEach((card) => this._renderCard(card, document.querySelector(`.films-list .films-list__container`)));
+      currentCards.slice(this._currentNumberOfCardsOnPage, this._currentNumberOfCardsOnPage + NUMBER_OF_CARDS_PER_PAGE).forEach((card) => this._renderCard(card, document.querySelector(`.films-list .films-list__container`)));
       this._currentNumberOfCardsOnPage += NUMBER_OF_CARDS_PER_PAGE;
-      if (this._cards.length <= this._currentNumberOfCardsOnPage) {
+      if (currentCards.length <= this._currentNumberOfCardsOnPage) {
         this._showMoreButton.getElement().removeEventListener(`click`, onShowMoreButtonClick);
         this._showMoreButton.removeElement();
       }
@@ -50,6 +50,25 @@ export class PageController {
       render(document.querySelector(`.films-list`), this._showMoreButton.getElement());
       this._showMoreButton.getElement().addEventListener(`click`, onShowMoreButtonClick);
     }
+  }
+
+  // Обработчик клика по сортировке
+  _onSortLinkClick(evt) {
+    evt.preventDefault();
+    if (evt.target.tagName !== `A`) {
+      return;
+    }
+    document.querySelector(`.films-list .films-list__container`).innerHTML = ``;
+    const sortedCards = Sorting.sort(this._cards, evt.target.dataset.sortType);
+    sortedCards.slice(0, this._currentNumberOfCardsOnPage).forEach((card) => this._renderCard(card, document.querySelector(`.films-list .films-list__container`)));
+    this.__renderShowMoreButton(sortedCards);
+    let sortingButtons = this._sorting.getElement().querySelectorAll(`.sort__button--active`);
+    sortingButtons.forEach((sortingButton) => {
+      if (sortingButton !== evt.target) {
+        sortingButton.classList.remove(`sort__button--active`);
+      }
+    });
+    evt.target.classList.add(`sort__button--active`);
   }
 
   _renderCard(data, container) {
@@ -64,7 +83,7 @@ export class PageController {
       render(main, emptyFilms.getElement());
     } else {
       render(main, this._films.getElement());
-      this._renderShowMoreButton();
+      this._renderShowMoreButton(this._cards);
       // Массово рендерим карточки фильмов
       // Берём данные карточек и отправляем их в функцию рендера.
       const cardsSortedByRating = Sorting.sort(this._cards, `rating-down`);
@@ -75,26 +94,8 @@ export class PageController {
       this._cards.slice(0, NUMBER_OF_CARDS_PER_PAGE).forEach((card) => this._renderCard(card, containerAllMovies));
       cardsSortedByRating.slice(0, NUMBER_OF_TOP_RATED_FILMS).forEach((card) => this._renderCard(card, containerTopRated));
       cardsSortedByAmountOfComments.slice(0, NUMBER_OF_MOST_COMMENTED_FILMS).forEach((card) => this._renderCard(card, containerMostCommented));
-      // Обработчик клика по сортировке
-      const onSortLinkClick = (evt) => {
-        evt.preventDefault();
-        if (evt.target.tagName !== `A`) {
-          return;
-        }
-        containerAllMovies.innerHTML = ``;
-        Sorting.sort(this._cards, evt.target.dataset.sortType).slice(0, NUMBER_OF_CARDS_PER_PAGE).forEach((card) => this._renderCard(card, containerAllMovies));
-        this._renderShowMoreButton();
-        let sortingButtons = this._sorting.getElement().querySelectorAll(`.sort__button--active`);
-        sortingButtons.forEach((sortingButton) => {
-          if (sortingButton !== evt.target) {
-            sortingButton.classList.remove(`sort__button--active`);
-          }
-        });
-
-        evt.target.classList.add(`sort__button--active`);
-      };
       // Добавляем обработчик события для сортировки
-      this._sorting.getElement().addEventListener(`click`, (evt) => onSortLinkClick(evt));
+      this._sorting.getElement().addEventListener(`click`, (evt) => this._onSortLinkClick(evt));
     }
   }
 
@@ -102,7 +103,8 @@ export class PageController {
     console.log(oldData.isFavorite);
     console.log(newData.isFavorite);
     this._cards[this._cards.findIndex((card) => card === oldData)] = newData;
-    document.querySelector(`.films-list__container--all`).innerHTML = ``;
+    const renderedCards = document.querySelectorAll(`.film-card`);
+    renderedCards.forEach((card) => unrender(card));
     this._renderAllCards(this._cards);
   }
 
