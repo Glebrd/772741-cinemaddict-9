@@ -19,11 +19,4 @@ export class Films extends AbstractComponent {
         </section>
       </section>`;
   }
-  static sortByRating(data) {
-    return data.slice().sort((a, b) => b.rating - a.rating);
-  }
-
-  static sortByAmountOfComments(data) {
-    return data.slice().sort((a, b) => b.comments.length - a.comments.length);
-  }
 }
