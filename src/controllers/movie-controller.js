@@ -1,7 +1,8 @@
 import { Card } from '../components/card.js';
 import { FilmDetails } from '../components/film-details.js';
 import { render, unrender, onEscButtonPress } from '../util.js';
-
+const body = document.querySelector(`body`);
+import { PageController } from './page-controller.js';
 export class MovieController {
   constructor(card, container, onDataChange, onChangeView) {
     this._card = card;
@@ -13,15 +14,15 @@ export class MovieController {
     this.init();
   }
   init() {
-
     // Код, который создаст экземпляры объектов и запустит процесс рендеринга (для карточки и попапа)
     const card = new Card(this._card);
     const filmDetails = new FilmDetails(this._card);
     // Открытие попапа
     const openDetails = () => {
       this._onChangeView();
-      render(this._container, filmDetails.getElement());
+      render(body, filmDetails.getElement());
       document.addEventListener(`keydown`, onDetailsEscPress);
+      filmDetails.getElement().querySelector(`.film-details__controls`).addEventListener(`click`, controlClickHandler);
     };
     // Закрытие попапа
     const closeDetails = () => {
@@ -68,26 +69,27 @@ export class MovieController {
 
     // Обработчик клика по кнопкам карточки
     const controlClickHandler = (event) => {
+      console.log(PageController._currentNumberOfCardsOnPage);
       const element = event.target;
       const cardNew = Object.assign({}, this._card);
-
       if (element.className.includes(`film-card__controls-item`)) {
+        console.log(element.dataset.actionType);
         event.preventDefault();
         element.classList.toggle(`film-card__controls-item--active`);
-        switch (element.dataset.actionType) {
-          case `add-to-watchlist`:
-            cardNew.isToWatch = !cardNew.isToWatch;
-            this._onDataChange(cardNew, this._card);
-            break;
-          case `mark-as-watched`:
-            cardNew.isWatched = !cardNew.isWatched;
-            this._onDataChange(cardNew, this._card);
-            break;
-          case `favorite`:
-            cardNew.isFavorite = !(cardNew.isFavorite);
-            this._onDataChange(cardNew, this._card);
-            break;
-        }
+      }
+      switch (element.dataset.actionType) {
+        case `add-to-watchlist`:
+          cardNew.isToWatch = !cardNew.isToWatch;
+          this._onDataChange(cardNew, this._card);
+          break;
+        case `mark-as-watched`:
+          cardNew.isWatched = !cardNew.isWatched;
+          this._onDataChange(cardNew, this._card);
+          break;
+        case `favorite`:
+          cardNew.isFavorite = !(cardNew.isFavorite);
+          this._onDataChange(cardNew, this._card);
+          break;
       }
     };
 

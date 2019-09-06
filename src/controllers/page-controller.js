@@ -32,6 +32,7 @@ export class PageController {
     this._onDataChange = this._onDataChange.bind(this);
     this._subscriptions = [];
     this._sortedCards = this._cards;
+    this._showMoreButtonIsActive = false;
   }
 
   //* Для добавления карточек, по нажатию на кнопку showMoreButton
@@ -39,7 +40,7 @@ export class PageController {
   _renderShowMoreButton() {
     // Обработчик клика на кнопку showmore
     const onShowMoreButtonClick = () => {
-      this._sortedCards.slice(this._currentNumberOfCardsOnPage, this._currentNumberOfCardsOnPage + NUMBER_OF_CARDS_PER_PAGE).forEach((card) => this._renderCard(card, document.querySelector(`.films-list .films-list__container`)));
+      this._cards.slice(this._currentNumberOfCardsOnPage, this._currentNumberOfCardsOnPage + NUMBER_OF_CARDS_PER_PAGE).forEach((card) => this._renderCard(card, document.querySelector(`.films-list .films-list__container`)));
       this._currentNumberOfCardsOnPage += NUMBER_OF_CARDS_PER_PAGE;
       if (this._cards.length <= this._currentNumberOfCardsOnPage) {
         this._showMoreButton.getElement().removeEventListener(`click`, onShowMoreButtonClick);
@@ -49,7 +50,10 @@ export class PageController {
     // Рендер кнопки showmore
     if (this._cards.length > this._currentNumberOfCardsOnPage) {
       render(document.querySelector(`.films-list`), this._showMoreButton.getElement());
-      this._showMoreButton.getElement().addEventListener(`click`, onShowMoreButtonClick);
+      if (!this._showMoreButtonIsActive) {
+        this._showMoreButton.getElement().addEventListener(`click`, onShowMoreButtonClick);
+        this._showMoreButtonIsActive = true;
+      }
     }
   }
 
@@ -93,6 +97,7 @@ export class PageController {
       const containerTopRated = document.querySelector(`.films-list__container--top`);
       const containerMostCommented = document.querySelector(`.films-list__container--commented`);
       this._sortedCards.slice(0, this._currentNumberOfCardsOnPage).forEach((card) => this._renderCard(card, containerAllMovies));
+      console.log(this._currentNumberOfCardsOnPage);
       cardsSortedByRating.slice(0, NUMBER_OF_TOP_RATED_FILMS).forEach((card) => this._renderCard(card, containerTopRated));
       cardsSortedByAmountOfComments.slice(0, NUMBER_OF_MOST_COMMENTED_FILMS).forEach((card) => this._renderCard(card, containerMostCommented));
       // Добавляем обработчик события для сортировки
