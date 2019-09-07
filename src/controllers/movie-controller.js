@@ -1,8 +1,7 @@
 import { Card } from '../components/card.js';
 import { FilmDetails } from '../components/film-details.js';
-import { render, unrender, onEscButtonPress } from '../util.js';
+import { render, unrender, onEscButtonPress, createElement } from '../util.js';
 const body = document.querySelector(`body`);
-import { PageController } from './page-controller.js';
 export class MovieController {
   constructor(card, container, onDataChange, onChangeView) {
     this._card = card;
@@ -23,6 +22,7 @@ export class MovieController {
       render(body, filmDetails.getElement());
       document.addEventListener(`keydown`, onDetailsEscPress);
       filmDetails.getElement().querySelector(`.film-details__controls`).addEventListener(`click`, controlClickHandler);
+      filmDetails.getElement().querySelector(`.film-details__comment-input`).addEventListener(`keydown`, pressEnterHandler);
     };
     // Закрытие попапа
     const closeDetails = () => {
@@ -69,7 +69,6 @@ export class MovieController {
 
     // Обработчик клика по кнопкам карточки
     const controlClickHandler = (event) => {
-      console.log(PageController._currentNumberOfCardsOnPage);
       const element = event.target;
       const cardNew = Object.assign({}, this._card);
       if (element.className.includes(`film-card__controls-item`)) {
@@ -94,6 +93,43 @@ export class MovieController {
     };
 
     card.getElement().querySelector(`.film-card__controls`).addEventListener(`click`, controlClickHandler);
+
+    // Добавление комента
+    const pressEnterHandler = (e) => {
+      if ((e.key === `Enter` && e.metaKey) || (e.key === `Enter` && e.ctrlKey)) {
+        const commentsList = filmDetails.getElement().querySelector(`.film-details__comments-list`);
+        const commentInput = filmDetails.getElement().querySelector(`.film-details__comment-input`);
+
+        const commentData = {
+          author: `GD`,
+          text: commentInput.value,
+          date: new Date(Date.now()),
+          emoji: filmDetails.getElement().querySelector(`.film-details__add-emoji-label img`).src,
+        };
+
+        const commentElement = createElement(`
+          <li class="film-details__comment">
+            <span class="film-details__comment-emoji">
+                <img src="${commentData.emoji}" width="55" height="55" alt="emoji" >
+            </span>
+            <div>
+              <p class="film-details__comment-text">${commentData.text}</p>
+              <p class="film-details__comment-info">
+                <span class="film-details__comment-author">${commentData.author}</span>
+                <span class="film-details__comment-day">${commentData.date}</span>
+                <button class="film-details__comment-delete">Delete</button>
+              </p>
+            </div>
+          </li>`.trim());
+
+        const newCommentsData = Object.assign({}, this._card);
+        newCommentsData.comments.push(commentData);
+        // newCommentsData.count++;
+        commentsList.appendChild(commentElement);
+        commentInput.value = ``;
+        this._onDataChange(newCommentsData, this._card);
+      }
+    };
   }
 
   setDefaultView() {
