@@ -72,7 +72,6 @@ export class PageController {
     document.querySelector(`.films-list .films-list__container`).innerHTML = ``;
     this._sortedCards = Sorting.sortCards(this._cards, evt.target.dataset.sortType);
     this._sortedCards.slice(0, this._currentNumberOfCardsOnPage).forEach((card) => this._renderCard(card, this._filmsAll.getElement().querySelector(`.films-list__container`)));
-    // this.__renderShowMoreButton(this._sortedCards);
     let sortingButtons = this._sorting.getElement().querySelectorAll(`.sort__button--active`);
     sortingButtons.forEach((sortingButton) => {
       if (sortingButton !== evt.target) {
