@@ -92,7 +92,7 @@ export class PageController {
   _renderAllCards() {
     // Проверка, есть ли карточки фильмов
     if (this._cards === []) {
-      let emptyFilms = new EmptyFilms(`no-cards`);
+      let emptyFilms = new EmptyFilms();
       render(this._container, emptyFilms.getElement());
     } else {
       render(this._container, this._films.getElement());
