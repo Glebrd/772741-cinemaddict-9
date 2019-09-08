@@ -1,8 +1,9 @@
-import { Card } from '../components/card.js';
-import { FilmDetails } from '../components/film-details.js';
-import { render, unrender, onEscButtonPress, createElement } from '../util.js';
-import { Emoji } from '../components/emoji.js';
-import { Comment } from '../components/comment.js';
+import {Card} from '../components/card.js';
+import {FilmDetails} from '../components/film-details.js';
+import {render, unrender, onEscButtonPress} from '../util.js';
+import {Emoji} from '../components/emoji.js';
+import {Comment} from '../components/comment.js';
+import {FilmRating} from '../components/film-rating.js';
 const body = document.querySelector(`body`);
 export class MovieController {
   constructor(card, container, onDataChange, onChangeView) {
@@ -92,9 +93,13 @@ export class MovieController {
         case `mark-as-watched`:
           cardNew.isWatched = !cardNew.isWatched;
           this._onDataChange(cardNew, this._card);
-          console.log(cardNew.isWatched);
-          closeDetails();
-          openDetails();
+          const openedFilmRating = document.querySelector(`.form-details__middle-container`);
+          if (openedFilmRating) {
+            unrender(openedFilmRating);
+          } else {
+            const filmRating = new FilmRating(cardNew.poster, cardNew.title);
+            filmDetails.getElement().querySelector(`.film-details__inner`).insertBefore(filmRating.getElement(), filmDetails.getElement().querySelector(`.form-details__bottom-container`));
+          }
           break;
         case `favorite`:
           cardNew.isFavorite = !(cardNew.isFavorite);

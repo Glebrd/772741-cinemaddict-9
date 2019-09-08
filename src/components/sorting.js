@@ -1,4 +1,4 @@
-import { AbstractComponent } from './abstract-component';
+import {AbstractComponent} from './abstract-component';
 
 
 const sortCardsByRating = (cards) => {
@@ -36,6 +36,7 @@ export class Sorting extends AbstractComponent {
       case `default`:
         return sortCardsByDefault(cards);
     }
+    return null;
   }
 }
 
