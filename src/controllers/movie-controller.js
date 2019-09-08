@@ -3,15 +3,12 @@ import {FilmDetails} from '../components/film-details.js';
 import {render, unrender, onEscButtonPress} from '../util.js';
 import {Emoji} from '../components/emoji.js';
 import {Comment} from '../components/comment.js';
-import {FilmRating} from '../components/film-rating.js';
 const body = document.querySelector(`body`);
 export class MovieController {
   constructor(card, container, onDataChange, onChangeView) {
     this._card = card;
     this._onDataChange = onDataChange;
     this._onChangeView = onChangeView;
-    // this._popUpRender = this.popUpRender.bind(this);
-    // this._setDefaultVeiew = this.setDefaultView.bind(this);
     this._container = container;
     this.init();
   }
@@ -33,29 +30,29 @@ export class MovieController {
       document.removeEventListener(`keydown`, onDetailsEscPress);
     };
     // Клик на постер
-    const onPosterClick = (evt) => {
-      evt.preventDefault();
+    const onPosterClick = (evtent) => {
+      evtent.preventDefault();
       openDetails();
     };
     card.getElement().querySelector(`.film-card__poster`)
       .addEventListener(`click`, onPosterClick);
     // Клик на тайтл
-    const onTitleClick = (evt) => {
-      evt.preventDefault();
+    const onTitleClick = (evtent) => {
+      evtent.preventDefault();
       openDetails();
     };
     card.getElement().querySelector(`.film-card__title`)
       .addEventListener(`click`, onTitleClick);
     // Клик на коменты
-    const onCommentsClick = (evt) => {
-      evt.preventDefault();
+    const onCommentsClick = (evtent) => {
+      evtent.preventDefault();
       openDetails();
     };
     card.getElement().querySelector(`.film-card__comments`)
       .addEventListener(`click`, onCommentsClick);
     // Клик на кнопку закрыть
-    const onCloseButtonClick = (evt) => {
-      evt.preventDefault();
+    const onCloseButtonClick = (evtent) => {
+      evtent.preventDefault();
       closeDetails();
     };
     filmDetails.getElement().querySelector(`.film-details__close-btn`)
@@ -93,13 +90,6 @@ export class MovieController {
         case `mark-as-watched`:
           cardNew.isWatched = !cardNew.isWatched;
           this._onDataChange(cardNew, this._card);
-          const openedFilmRating = document.querySelector(`.form-details__middle-container`);
-          if (openedFilmRating) {
-            unrender(openedFilmRating);
-          } else {
-            const filmRating = new FilmRating(cardNew.poster, cardNew.title);
-            filmDetails.getElement().querySelector(`.film-details__inner`).insertBefore(filmRating.getElement(), filmDetails.getElement().querySelector(`.form-details__bottom-container`));
-          }
           break;
         case `favorite`:
           cardNew.isFavorite = !(cardNew.isFavorite);
@@ -108,21 +98,13 @@ export class MovieController {
       }
     };
     card.getElement().querySelector(`.film-card__controls`).addEventListener(`click`, controlClickHandler);
-    // Блок с оценкой пользователя
-    // filmDetails.getElement().querySelector(`.film-details__control-label--watched`).addEventListener(`click`, () => {
-    //   if (filmDetails.getElement().querySelector(`.form-details__middle-container`)) {
-    //     unrender(filmDetails.getElement().querySelector(`.form-details__middle-container`));
-    //     return;
-    //   }
-    //   this.getElement().querySelector(`.film-details__inner`).insertBefore(rateSection, filmDetails.getElement().querySelector(`.form-details__bottom-container`));
-    // });
 
     // Добавление коментариев
     const commentaries = filmDetails.getElement().querySelector(`.film-details__comments-list`);
     this._card.comments.map((commentary) => render(commentaries, new Comment(commentary).getElement()));
 
-    const pressEnterHandler = (e) => {
-      if ((e.key === `Enter` && e.metaKey) || (e.key === `Enter` && e.ctrlKey)) {
+    const pressEnterHandler = (event) => {
+      if ((event.ctrlKey || event.metaKey) && event.key === `Enter`) {
         const commentsList = filmDetails.getElement().querySelector(`.film-details__comments-list`);
         const commentInput = filmDetails.getElement().querySelector(`.film-details__comment-input`);
 
@@ -140,6 +122,12 @@ export class MovieController {
         this._onDataChange(newCommentsData, this._card);
       }
     };
+    // Проверяем, был ли попап открыт до создания данного экземпляра объекта.  Если да, то обновляем.
+    if (document.querySelector(`.film-details__title`)) {
+      if (document.querySelector(`.film-details__title`).innerHTML === this._card.title) {
+        openDetails();
+      }
+    }
   }
 
   setDefaultView() {
