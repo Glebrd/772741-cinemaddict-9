@@ -1,26 +1,10 @@
-import {createElementsFromTemplateAndData, getAmountOfDaysBeteweenToDates, convertToFullDate, convertMinutesToMovieTimeFormat} from '../util.js';
+import {createElementsFromTemplateAndData, convertToFullDate, convertMinutesToMovieTimeFormat} from '../util.js';
 import {AbstractComponent} from './abstract-component';
-import { createElement, unrender } from '../util.js';
 
 const checkActiveButton = (isActive) => isActive ? `checked` : ``;
 
 const getGenreMarkup = (genre) =>
   `<span class="film-details__genre">${genre}</span>`;
-
-const getCommentMarkup = ({author, date, text, emoji}) =>
-  `<li class="film-details__comment">
-<span class="film-details__comment-emoji">
-  <img src="${emoji}" width="55" height="55" alt="emoji">
-</span>
-<div>
-  <p class="film-details__comment-text">${text}</p>
-  <p class="film-details__comment-info">
-    <span class="film-details__comment-author">${author}</span>
-    <span class="film-details__comment-day">${getAmountOfDaysBeteweenToDates(date, new Date())} days ago</span>
-    <button class="film-details__comment-delete">Delete</button>
-  </p>
-</div>
-</li>`;
 
 const getRateMarkup = (poster, title) => (`
 <div class="form-details__middle-container">
@@ -94,32 +78,6 @@ export class FilmDetails extends AbstractComponent {
     this._isWatched = isWatched;
     this._isToWatch = isToWatch;
     this._isFavorite = isFavorite;
-    this.init();
-  }
-
-  init() {
-    const rateSection = createElement(getRateMarkup(this._poster, this._title));
-    // Добавляем блок оценки, если в попапе стоит признак Просмотрено
-    if (this.getElement().querySelector(`#watched`).checked) {
-      this.getElement().querySelector(`.film-details__inner`).insertBefore(rateSection, this.getElement().querySelector(`.form-details__bottom-container`));
-    }
-    // Добавляем евент листенер, который скрывает или показывает блок по клику на кнопку Просмотрено
-    this.getElement().querySelector(`.film-details__control-label--watched`).addEventListener(`click`, () => {
-      if (this.getElement().querySelector(`.form-details__middle-container`)) {
-        unrender(this.getElement().querySelector(`.form-details__middle-container`));
-        return;
-      }
-      this.getElement().querySelector(`.film-details__inner`).insertBefore(rateSection, this.getElement().querySelector(`.form-details__bottom-container`));
-    });
-    // Добавляем евент листенеры на эмоджи
-    this.getElement().querySelectorAll(`.film-details__emoji-label`).forEach((el) => {
-      el.addEventListener(`click`, () => {
-        const img = el.querySelector(`img`);
-        this.getElement().querySelector(`.film-details__add-emoji-label`).innerHTML = ``;
-        this.getElement().querySelector(`.film-details__add-emoji-label`)
-          .appendChild(createElement(`<img src="${img.src}" width="55" height="55" alt="emoji">`));
-      });
-    });
   }
 
   getTemplate() {
@@ -198,13 +156,12 @@ export class FilmDetails extends AbstractComponent {
           <label for="favorite" class="film-details__control-label film-details__control-label--favorite" data-action-type="favorite">Add to favorites</label>
         </section>
       </div>
-
+      ${this._isWatched ? getRateMarkup(this._poster, this._title) : ``}
       <div class="form-details__bottom-container">
         <section class="film-details__comments-wrap">
           <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${this._comments.length}</span></h3>
 
           <ul class="film-details__comments-list">
-          ${createElementsFromTemplateAndData(this._comments, getCommentMarkup)}
           </ul>
 
           <div class="film-details__new-comment">

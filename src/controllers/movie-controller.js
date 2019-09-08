@@ -1,6 +1,8 @@
 import { Card } from '../components/card.js';
 import { FilmDetails } from '../components/film-details.js';
 import { render, unrender, onEscButtonPress, createElement } from '../util.js';
+import { Emoji } from '../components/emoji.js';
+import { Comment } from '../components/comment.js';
 const body = document.querySelector(`body`);
 export class MovieController {
   constructor(card, container, onDataChange, onChangeView) {
@@ -15,7 +17,7 @@ export class MovieController {
   init() {
     // Код, который создаст экземпляры объектов и запустит процесс рендеринга (для карточки и попапа)
     const card = new Card(this._card);
-    const filmDetails = new FilmDetails(this._card);
+    let filmDetails = new FilmDetails(this._card);
     // Открытие попапа
     const openDetails = () => {
       this._onChangeView();
@@ -66,13 +68,19 @@ export class MovieController {
     };
     // Отрисовка карточки фильма
     render(this._container, card.getElement());
-
+    // Обработчик клика по эмоджи
+    filmDetails.getElement().querySelectorAll(`.film-details__emoji-label`).forEach((element) => {
+      element.addEventListener(`click`, () => {
+        const img = element.querySelector(`img`);
+        filmDetails.getElement().querySelector(`.film-details__add-emoji-label`).innerHTML = ``;
+        filmDetails.getElement().querySelector(`.film-details__add-emoji-label`).appendChild(new Emoji(img.src).getElement());
+      });
+    });
     // Обработчик клика по кнопкам карточки
     const controlClickHandler = (event) => {
       const element = event.target;
       const cardNew = Object.assign({}, this._card);
       if (element.className.includes(`film-card__controls-item`)) {
-        console.log(element.dataset.actionType);
         event.preventDefault();
         element.classList.toggle(`film-card__controls-item--active`);
       }
@@ -84,6 +92,9 @@ export class MovieController {
         case `mark-as-watched`:
           cardNew.isWatched = !cardNew.isWatched;
           this._onDataChange(cardNew, this._card);
+          console.log(cardNew.isWatched);
+          closeDetails();
+          openDetails();
           break;
         case `favorite`:
           cardNew.isFavorite = !(cardNew.isFavorite);
@@ -91,10 +102,20 @@ export class MovieController {
           break;
       }
     };
-
     card.getElement().querySelector(`.film-card__controls`).addEventListener(`click`, controlClickHandler);
+    // Блок с оценкой пользователя
+    // filmDetails.getElement().querySelector(`.film-details__control-label--watched`).addEventListener(`click`, () => {
+    //   if (filmDetails.getElement().querySelector(`.form-details__middle-container`)) {
+    //     unrender(filmDetails.getElement().querySelector(`.form-details__middle-container`));
+    //     return;
+    //   }
+    //   this.getElement().querySelector(`.film-details__inner`).insertBefore(rateSection, filmDetails.getElement().querySelector(`.form-details__bottom-container`));
+    // });
 
-    // Добавление комента
+    // Добавление коментариев
+    const commentaries = filmDetails.getElement().querySelector(`.film-details__comments-list`);
+    this._card.comments.map((commentary) => render(commentaries, new Comment(commentary).getElement()));
+
     const pressEnterHandler = (e) => {
       if ((e.key === `Enter` && e.metaKey) || (e.key === `Enter` && e.ctrlKey)) {
         const commentsList = filmDetails.getElement().querySelector(`.film-details__comments-list`);
@@ -107,25 +128,9 @@ export class MovieController {
           emoji: filmDetails.getElement().querySelector(`.film-details__add-emoji-label img`).src,
         };
 
-        const commentElement = createElement(`
-          <li class="film-details__comment">
-            <span class="film-details__comment-emoji">
-                <img src="${commentData.emoji}" width="55" height="55" alt="emoji" >
-            </span>
-            <div>
-              <p class="film-details__comment-text">${commentData.text}</p>
-              <p class="film-details__comment-info">
-                <span class="film-details__comment-author">${commentData.author}</span>
-                <span class="film-details__comment-day">${commentData.date}</span>
-                <button class="film-details__comment-delete">Delete</button>
-              </p>
-            </div>
-          </li>`.trim());
-
         const newCommentsData = Object.assign({}, this._card);
         newCommentsData.comments.push(commentData);
-        // newCommentsData.count++;
-        commentsList.appendChild(commentElement);
+        commentsList.appendChild(new Comment(commentData).getElement());
         commentInput.value = ``;
         this._onDataChange(newCommentsData, this._card);
       }
@@ -134,9 +139,7 @@ export class MovieController {
 
   setDefaultView() {
     const popup = document.querySelector(`.film-details`);
-    console.log(popup);
     if (document.body.contains(popup)) {
-      console.log(popup);
       unrender(popup);
     }
   }
