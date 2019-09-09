@@ -1,5 +1,5 @@
 import {AbstractComponent} from './abstract-component.js';
-import {getAmountOfDaysBeteweenToDates} from '../util.js';
+import moment from 'moment';
 export class Comment extends AbstractComponent {
   constructor(comment) {
     super();
@@ -18,7 +18,7 @@ export class Comment extends AbstractComponent {
     <p class="film-details__comment-text">${this._text}</p>
     <p class="film-details__comment-info">
       <span class="film-details__comment-author">${this._author}</span>
-      <span class="film-details__comment-day">${getAmountOfDaysBeteweenToDates(this._date, new Date())} days ago</span>
+      <span class="film-details__comment-day">${moment(this._date).format(`YY/MM/DD hh:mm`)}</span>
       <button class="film-details__comment-delete">Delete</button>
     </p>
   </div>
