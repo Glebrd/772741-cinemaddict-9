@@ -45,10 +45,12 @@ export const convertMinutesToMovieTimeFormat = (time) => {
   return `${Math.floor(time / 60)}h ${time % 60}m`;
 };
 
-export const getAmountOfDaysBeteweenToDates = (date1, date2) => {
-  const diffTime = Math.abs(date2.getTime() - date1.getTime());
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  return diffDays;
+export const getAmountOfDaysBeteweenToDates = (date) => {
+  return date.toLocaleDateString(`en-US`, {
+    year: `2-digit`,
+    day: `2-digit`,
+    month: `2-digit`,
+  });
 };
 
 // Разное
