@@ -1,15 +1,16 @@
-import {Search} from '../components/search.js';
-import {UserRating} from '../components/user-rating.js';
-import {Sorting} from '../components/sorting.js';
-import {Menu} from '../components/menu.js';
-import {Films} from '../components/films.js';
-import {FilmsAll} from '../components/films-all.js';
-import {FilmsMostCommented} from '../components/films-most-commented.js';
-import {FilmsTopRated} from '../components/films-top-rated.js';
-import {EmptyFilms} from '../components/empty-films.js';
-import {render, unrender} from '../util.js';
-import {ShowMoreButton} from '../components/show-more-button.js';
-import {MovieController} from './movie-controller.js';
+import { Search } from '../components/search.js';
+import { UserRating } from '../components/user-rating.js';
+import { Sorting } from '../components/sorting.js';
+import { Menu } from '../components/menu.js';
+import { Films } from '../components/films.js';
+import { FilmsAll } from '../components/films-all.js';
+import { FilmsMostCommented } from '../components/films-most-commented.js';
+import { FilmsTopRated } from '../components/films-top-rated.js';
+import { EmptyFilms } from '../components/empty-films.js';
+import { render, unrender } from '../util.js';
+import { ShowMoreButton } from '../components/show-more-button.js';
+import { MovieController } from './movie-controller.js';
+import { Statistic } from '../components/statistic.js';
 const NUMBER_OF_CARDS_PER_PAGE = 5;
 const NUMBER_OF_TOP_RATED_FILMS = 2;
 const NUMBER_OF_MOST_COMMENTED_FILMS = 2;
@@ -27,6 +28,7 @@ export class PageController {
     this._search = new Search();
     this._userRating = new UserRating(this._userRank);
     this._menu = new Menu(this._filtersCount);
+    this._statistic = new Statistic();
     this._sorting = new Sorting();
     this._films = new Films();
     this._filmsAll = new FilmsAll();
@@ -107,13 +109,15 @@ export class PageController {
       this._sortedCards.slice(0, this._currentNumberOfCardsOnPage).forEach((card) => this._renderCard(card, this._filmsAll.getElement().querySelector(`.films-list__container`)));
       cardsSortedByRating.slice(0, NUMBER_OF_TOP_RATED_FILMS).forEach((card) => this._renderCard(card, this._filmsTopRated.getElement().querySelector(`.films-list__container`)));
       cardsSortedByAmountOfComments.slice(0, NUMBER_OF_MOST_COMMENTED_FILMS).forEach((card) => this._renderCard(card, this._filmsMostCommented.getElement().querySelector(`.films-list__container`)));
-      // Добавляем обработчик события для сортировки
-      this._sorting.getElement().addEventListener(`click`, (evt) => this._onSortLinkClick(evt));
     }
   }
 
   _onDataChange(newData, oldData) {
-    this._sortedCards[this._sortedCards.findIndex((card) => card === oldData)] = newData;
+    const index = this._sortedCards.findIndex((card) => card === oldData);
+    // if (newData === null) {
+    //   this._sortedCards[index] = [...this._sortedCards.slice(0, index), ...this._sortedCards.slice(index + 1)];
+    // }
+    this._sortedCards[index] = newData;
     const renderedCards = document.querySelectorAll(`.film-card`);
     renderedCards.forEach((card) => unrender(card));
     this._renderAllCards(this._sortedCards);
@@ -123,13 +127,25 @@ export class PageController {
     this._subscriptions.forEach((subscription) => subscription());
   }
 
+  _onStatisticButtonClick() {
+    this._statistic.getElement().classList.toggle(`visually-hidden`);
+    this._sorting.getElement().classList.toggle(`visually-hidden`);
+    this._films.getElement().classList.toggle(`visually-hidden`);
+  }
+
   init() {
     // Запускаем процесс рендеринга
     const header = document.querySelector(`.header`);
     render(header, this._search.getElement());
     render(header, this._userRating.getElement());
     render(this._container, this._menu.getElement());
+    render(this._container, this._statistic.getElement());
     render(this._container, this._sorting.getElement());
     this._renderAllCards();
+    // Добавляем обработчик события для сортировки
+    this._sorting.getElement().addEventListener(`click`, (evt) => this._onSortLinkClick(evt));
+    // Добавляем обработчик события для показа статистики
+    this._menu.getElement().querySelector(`.main-navigation__item--additional`).addEventListener(`click`, () => this._onStatisticButtonClick());
   }
+
 }

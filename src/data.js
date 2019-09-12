@@ -102,6 +102,7 @@ const EMOJIS = [
 
 // Структура данных для комментария
 const getCommentData = () => ({
+  id: getRandomNumber(1,1000),
   author: getRandomElementFromArray(DIRECTORS, getRandomNumber(MIN_NUMBER_OF_MOCK_ELEMENTS_IN_ARRAY, MAX_NUMBER_OF_MOCK_ELEMENTS_IN_ARRAY)),
   date: getRandomDate(new Date(2000, 2, 22), new Date()),
   text: getRandomElementFromArray(COMMENTS),

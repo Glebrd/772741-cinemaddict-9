@@ -3,6 +3,7 @@ import moment from 'moment';
 export class Comment extends AbstractComponent {
   constructor(comment) {
     super();
+    this._id = comment.id;
     this._emoji = comment.emoji;
     this._text = comment.text;
     this._author = comment.author;
@@ -10,7 +11,7 @@ export class Comment extends AbstractComponent {
   }
 
   getTemplate() {
-    return `<li class="film-details__comment">
+    return `<li class="film-details__comment" data-comment-id="${this._id}">
   <span class="film-details__comment-emoji">
     <img src="${this._emoji}" width="55" height="55" alt="emoji">
   </span>
