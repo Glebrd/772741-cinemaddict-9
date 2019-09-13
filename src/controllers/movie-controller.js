@@ -1,9 +1,8 @@
-import { Card } from '../components/card.js';
-import { FilmDetails } from '../components/film-details.js';
-import { render, unrender, onEscButtonPress } from '../util.js';
-import { Emoji } from '../components/emoji.js';
-import { Comment } from '../components/comment.js';
-import { runInThisContext } from 'vm';
+import {Card} from '../components/card.js';
+import {FilmDetails} from '../components/film-details.js';
+import {render, unrender, onEscButtonPress} from '../util.js';
+import {Emoji} from '../components/emoji.js';
+import {Comment} from '../components/comment.js';
 const body = document.querySelector(`body`);
 export class MovieController {
   constructor(card, container, onDataChange, onChangeView) {
@@ -132,9 +131,7 @@ export class MovieController {
           const newCommentsData = Object.assign({}, this._card);
           const clickedCommentId = event.currentTarget.getAttribute(`data-comment-id`);
           const index = newCommentsData.comments.findIndex((comment) => comment.id === parseInt(clickedCommentId, 10));
-          console.log(index);
           newCommentsData.comments = newCommentsData.comments.filter((item) => item !== newCommentsData.comments[index]);
-          console.log(newCommentsData.comments);
           this._onDataChange(newCommentsData, this._card);
         }
       });
