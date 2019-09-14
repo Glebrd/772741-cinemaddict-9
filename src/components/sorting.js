@@ -13,10 +13,6 @@ const sortCardsByDate = (cards) => {
   return cards.slice().sort((a, b) => b.releaseDate - a.releaseDate);
 };
 
-const sortCardsByDefault = (cards) => {
-  return cards;
-};
-
 export class Sorting extends AbstractComponent {
   getTemplate() {
     return `<ul class="sort">
@@ -34,7 +30,7 @@ export class Sorting extends AbstractComponent {
       case `date-down`:
         return sortCardsByDate(cards);
       case `default`:
-        return sortCardsByDefault(cards);
+        return cards;
     }
     return null;
   }

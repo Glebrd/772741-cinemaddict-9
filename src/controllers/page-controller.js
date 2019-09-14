@@ -136,6 +136,7 @@ export class PageController {
     this._subscriptions.forEach((subscription) => subscription());
   }
 
+  // Добавить обработку всех кнопок статистики и смену цвета
   _onStatisticButtonClick() {
     this._statistic.getElement().classList.toggle(`visually-hidden`);
     this._sorting.getElement().classList.toggle(`visually-hidden`);

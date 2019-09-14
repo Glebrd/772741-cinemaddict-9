@@ -1,6 +1,6 @@
 import {Card} from '../components/card.js';
 import {FilmDetails} from '../components/film-details.js';
-import {render, unrender, onEscButtonPress} from '../util.js';
+import {render, unrender, onEscButtonPress, getID} from '../util.js';
 import {Emoji} from '../components/emoji.js';
 import {Comment} from '../components/comment.js';
 const body = document.querySelector(`body`);
@@ -110,6 +110,7 @@ export class MovieController {
         const commentInput = filmDetails.getElement().querySelector(`.film-details__comment-input`);
 
         const commentData = {
+          id: getID(),
           author: `GD`,
           text: commentInput.value,
           date: new Date(Date.now()),
@@ -129,9 +130,9 @@ export class MovieController {
         if (event.target.classList.contains(`film-details__comment-delete`)) {
           event.preventDefault();
           const newCommentsData = Object.assign({}, this._card);
-          const clickedCommentId = event.currentTarget.getAttribute(`data-comment-id`);
-          const index = newCommentsData.comments.findIndex((comment) => comment.id === parseInt(clickedCommentId, 10));
-          newCommentsData.comments = newCommentsData.comments.filter((item) => item !== newCommentsData.comments[index]);
+          const clickedCommentId = event.currentTarget.dataset.commentId;
+          const clickedComment = newCommentsData.comments.find((comment) => comment.id === parseInt(clickedCommentId, 10));
+          newCommentsData.comments = newCommentsData.comments.filter((item) => item !== clickedComment);
           this._onDataChange(newCommentsData, this._card);
         }
       });

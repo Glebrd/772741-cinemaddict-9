@@ -1,4 +1,4 @@
-import {getRandomElementFromArray, getRandomElementsFromArray, getRandomDate, getRandomNumber} from "./util";
+import {getRandomElementFromArray, getRandomElementsFromArray, getRandomDate, getRandomNumber, getID} from "./util";
 
 const MIN_NUMBER_OF_MOCK_ELEMENTS_IN_ARRAY = 1;
 const MAX_NUMBER_OF_MOCK_ELEMENTS_IN_ARRAY = 3;
@@ -102,7 +102,7 @@ const EMOJIS = [
 
 // Структура данных для комментария
 const getCommentData = () => ({
-  id: getRandomNumber(1, 1000),
+  id: getID(),
   author: getRandomElementFromArray(DIRECTORS, getRandomNumber(MIN_NUMBER_OF_MOCK_ELEMENTS_IN_ARRAY, MAX_NUMBER_OF_MOCK_ELEMENTS_IN_ARRAY)),
   date: getRandomDate(new Date(2000, 2, 22), new Date()),
   text: getRandomElementFromArray(COMMENTS),

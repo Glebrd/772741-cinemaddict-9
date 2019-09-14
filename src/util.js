@@ -1,4 +1,10 @@
 const ESC_KEYCODE = 27;
+let currentID = -1;
+// Генерация уникальных ID
+export const getID = () => {
+  currentID += 1;
+  return currentID;
+};
 // Получение случайных значений
 export const getRandomNumber = (min, max) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
