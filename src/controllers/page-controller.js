@@ -1,17 +1,17 @@
-import {Search} from '../components/search.js';
-import {UserRating} from '../components/user-rating.js';
-import {Sorting} from '../components/sorting.js';
-import {Menu} from '../components/menu.js';
-import {Films} from '../components/films.js';
-import {FilmsAll} from '../components/films-all.js';
-import {FilmsMostCommented} from '../components/films-most-commented.js';
-import {FilmsTopRated} from '../components/films-top-rated.js';
-import {EmptyFilms} from '../components/empty-films.js';
-import {render, unrender} from '../util.js';
-import {ShowMoreButton} from '../components/show-more-button.js';
-import {MovieController} from './movie-controller.js';
-import {Statistic} from '../components/statistic.js';
-import {SearchController} from './search-controller.js';
+import { Search } from '../components/search.js';
+import { UserRating } from '../components/user-rating.js';
+import { Sorting } from '../components/sorting.js';
+import { Menu } from '../components/menu.js';
+import { Films } from '../components/films.js';
+import { FilmsAll } from '../components/films-all.js';
+import { FilmsMostCommented } from '../components/films-most-commented.js';
+import { FilmsTopRated } from '../components/films-top-rated.js';
+import { EmptyFilms } from '../components/empty-films.js';
+import { render, unrender } from '../util.js';
+import { ShowMoreButton } from '../components/show-more-button.js';
+import { MovieController } from './movie-controller.js';
+import { Statistic } from '../components/statistic.js';
+import { SearchController } from './search-controller.js';
 const NUMBER_OF_CARDS_PER_PAGE = 5;
 const NUMBER_OF_TOP_RATED_FILMS = 2;
 const NUMBER_OF_MOST_COMMENTED_FILMS = 2;
@@ -42,6 +42,8 @@ export class PageController {
     // Для предотращение навешивания лишних обработчиков на кнопку
     this._showMoreButtonIsActive = false;
     this._searchIsActive = false;
+    this._filterIsActive = false;
+    this._currentFilter = null;
     // Для наблюдателя
     this._onChangeView = this._onChangeView.bind(this);
     this._onDataChange = this._onDataChange.bind(this);
@@ -53,15 +55,15 @@ export class PageController {
   _renderShowMoreButton() {
     // Обработчик клика на кнопку showmore
     const onShowMoreButtonClick = () => {
-      this._cards.slice(this._currentNumberOfCardsOnPage, this._currentNumberOfCardsOnPage + NUMBER_OF_CARDS_PER_PAGE).forEach((card) => this._renderCard(card, this._filmsAll.getElement().querySelector(`.films-list__container`)));
+      this._sortedCards.slice(this._currentNumberOfCardsOnPage, this._currentNumberOfCardsOnPage + NUMBER_OF_CARDS_PER_PAGE).forEach((card) => this._renderCard(card, this._filmsAll.getElement().querySelector(`.films-list__container`)));
       this._currentNumberOfCardsOnPage += NUMBER_OF_CARDS_PER_PAGE;
-      if (this._cards.length <= this._currentNumberOfCardsOnPage) {
+      if (this._sortedCards.length <= this._currentNumberOfCardsOnPage) {
         this._showMoreButton.getElement().removeEventListener(`click`, onShowMoreButtonClick);
         this._showMoreButton.removeElement();
       }
     };
     // Рендер кнопки showmore
-    if (this._cards.length > this._currentNumberOfCardsOnPage) {
+    if (this._sortedCards.length > this._currentNumberOfCardsOnPage) {
       render(this._filmsAll.getElement(), this._showMoreButton.getElement());
       if (!this._showMoreButtonIsActive) {
         this._showMoreButton.getElement().addEventListener(`click`, onShowMoreButtonClick);
@@ -120,14 +122,22 @@ export class PageController {
   _onDataChange(newData, oldData) {
     const index = this._sortedCards.findIndex((card) => card === oldData);
     this._sortedCards[index] = newData;
-    const renderedCards = document.querySelectorAll(`.film-card`);
-    renderedCards.forEach((card) => unrender(card));
     if (this._searchIsActive) {
-      // this._cards = this._sortedCards;
+      const renderedCards = document.querySelectorAll(`.film-card`);
+      renderedCards.forEach((card) => unrender(card));
       const searchController = new SearchController(this._query, this._cards);
       this.__cardsAfterSearch = searchController.searchFilm();
       this.__cardsAfterSearch.forEach((card) => this._renderCard(card, this._filmsAll.getElement().querySelector(`.films-list__container`)));
-    } else {
+    }
+    else if (this._filterIsActive) {
+      const renderedCards = this._filmsAll.getElement().querySelectorAll(`.film-card`);
+      renderedCards.forEach((card) => unrender(card));
+      this._sortedCards = Menu.filterCards(this._sortedCards, this._currentFilter);
+      this._sortedCards.slice(0, this._currentNumberOfCardsOnPage).forEach((card) => this._renderCard(card, this._filmsAll.getElement().querySelector(`.films-list__container`)));
+    }
+    else {
+      const renderedCards = document.querySelectorAll(`.film-card`);
+      renderedCards.forEach((card) => unrender(card));
       this._renderAllCards(this._sortedCards);
     }
   }
@@ -137,10 +147,46 @@ export class PageController {
   }
 
   // Добавить обработку всех кнопок статистики и смену цвета
-  _onStatisticButtonClick() {
-    this._statistic.getElement().classList.toggle(`visually-hidden`);
-    this._sorting.getElement().classList.toggle(`visually-hidden`);
-    this._films.getElement().classList.toggle(`visually-hidden`);
+  _onStatisticButtonClick(event) {
+    this._filterIsActive = true;
+    let numberOfCardsToShow = null;
+    event.preventDefault();
+    if (event.target.tagName !== `A`) {
+      return;
+    }
+    let navigationButtons = this._menu.getElement().querySelectorAll(`.main-navigation__item`);
+    navigationButtons.forEach((navigationButton) => {
+      if (navigationButton !== event.target) {
+        navigationButton.classList.remove(`main-navigation__item--active`);
+      }
+      if (event.target.classList.contains(`main-navigation__item--additional`)) {
+        this._statistic.getElement().classList.toggle(`visually-hidden`);
+        this._sorting.getElement().classList.toggle(`visually-hidden`);
+        this._films.getElement().classList.toggle(`visually-hidden`);
+      } else {
+        document.querySelector(`.films-list .films-list__container`).innerHTML = ``;
+        this._showMoreButton.removeElement();
+        this._showMoreButtonIsActive = false;
+        this._renderShowMoreButton();
+        this._currentFilter = event.target.getAttribute(`href`);
+        this._sortedCards = Menu.filterCards(this._cards, this._currentFilter);
+        if (this._currentNumberOfCardsOnPage >= this._sortedCards.length) {
+          numberOfCardsToShow = this._sortedCards.length;
+          // this._showMoreButton.removeElement();
+          // this._showMoreButtonIsActive = false;
+        } else {
+          numberOfCardsToShow = this._currentNumberOfCardsOnPage;
+        }
+
+        this._sortedCards.slice(0, numberOfCardsToShow).forEach((card) => this._renderCard(card, this._filmsAll.getElement().querySelector(`.films-list__container`)));
+        // this._renderShowMoreButton();
+        this._currentNumberOfCardsOnPage = numberOfCardsToShow;
+      }
+      if (event.target.getAttribute(`href`) === `#all`) {
+        this._filterIsActive = false;
+      }
+      event.target.classList.add(`main-navigation__item--active`);
+    });
   }
 
   _renderPage() {
@@ -155,7 +201,8 @@ export class PageController {
     // Добавляем обработчик события для сортировки
     this._sorting.getElement().addEventListener(`click`, (evt) => this._onSortLinkClick(evt));
     // Добавляем обработчик события для показа статистики
-    this._menu.getElement().querySelector(`.main-navigation__item--additional`).addEventListener(`click`, () => this._onStatisticButtonClick());
+    // this._menu.getElement().querySelector(`.main-navigation__item--additional`).addEventListener(`click`, () => this._onStatisticButtonClick());
+    this._menu.getElement().addEventListener(`click`, (evt) => this._onStatisticButtonClick(evt));
   }
 
   init() {

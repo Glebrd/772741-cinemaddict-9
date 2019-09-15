@@ -1,5 +1,18 @@
 import {createElementsFromTemplateAndData} from "../util";
 import {AbstractComponent} from './abstract-component';
+
+const filterCardsByWatchlist = (cards) => {
+  return cards.filter((card) => card.isToWatch === true);
+};
+
+const filterCardsByHistory = (cards) => {
+  return cards.filter((card) => card.isWatched === true);
+};
+
+const filterCardsByFavorites = (cards) => {
+  return cards.filter((card) => card.isFavorite === true);
+};
+
 export class Menu extends AbstractComponent {
   constructor(filters) {
     super();
@@ -36,5 +49,19 @@ export class Menu extends AbstractComponent {
       {title: `History`, count: isWatched},
       {title: `Favorites`, count: isFavorite},
     ];
+  }
+
+  static filterCards(cards, filterType) {
+    switch (filterType) {
+      case `#all`:
+        return cards;
+      case `watchlist`:
+        return filterCardsByWatchlist(cards);
+      case `history`:
+        return filterCardsByHistory(cards);
+      case `favorites`:
+        return filterCardsByFavorites(cards);
+    }
+    return null;
   }
 }
