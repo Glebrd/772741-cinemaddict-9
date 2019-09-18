@@ -134,6 +134,7 @@ const getCardData = () => ({
   isToWatch: Boolean(Math.round(Math.random())),
   isWatched: Boolean(Math.round(Math.random())),
   isFavorite: Boolean(Math.round(Math.random())),
+  watchingDate: getRandomDate(new Date(2018, 2, 22), new Date()),
   comments: getCommentsData(),
 });
 

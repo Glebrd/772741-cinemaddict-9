@@ -105,10 +105,9 @@ export class MovieController {
     this._card.comments.map((commentary) => render(commentaries, new Comment(commentary).getElement()));
 
     const pressEnterHandler = (event) => {
-      if ((event.ctrlKey || event.metaKey) && event.key === `Enter`) {
+      const commentInput = filmDetails.getElement().querySelector(`.film-details__comment-input`);
+      if ((event.ctrlKey || event.metaKey) && event.key === `Enter` && commentInput.value !== ``) {
         const commentsList = filmDetails.getElement().querySelector(`.film-details__comments-list`);
-        const commentInput = filmDetails.getElement().querySelector(`.film-details__comment-input`);
-
         const commentData = {
           id: getID(),
           author: `GD`,

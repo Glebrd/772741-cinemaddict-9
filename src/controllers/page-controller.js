@@ -1,17 +1,17 @@
-import { Search } from '../components/search.js';
-import { UserRating } from '../components/user-rating.js';
-import { Sorting } from '../components/sorting.js';
-import { Menu } from '../components/menu.js';
-import { Films } from '../components/films.js';
-import { FilmsAll } from '../components/films-all.js';
-import { FilmsMostCommented } from '../components/films-most-commented.js';
-import { FilmsTopRated } from '../components/films-top-rated.js';
-import { EmptyFilms } from '../components/empty-films.js';
-import { render, unrender } from '../util.js';
-import { ShowMoreButton } from '../components/show-more-button.js';
-import { MovieController } from './movie-controller.js';
-import { Statistic } from '../components/statistic.js';
-import { SearchController } from './search-controller.js';
+import {Search} from '../components/search.js';
+import {UserRating} from '../components/user-rating.js';
+import {Sorting} from '../components/sorting.js';
+import {Menu} from '../components/menu.js';
+import {Films} from '../components/films.js';
+import {FilmsAll} from '../components/films-all.js';
+import {FilmsMostCommented} from '../components/films-most-commented.js';
+import {FilmsTopRated} from '../components/films-top-rated.js';
+import {EmptyFilms} from '../components/empty-films.js';
+import {render, unrender} from '../util.js';
+import {ShowMoreButton} from '../components/show-more-button.js';
+import {MovieController} from './movie-controller.js';
+import {SearchController} from './search-controller.js';
+import {StatisticController} from './statistic-controller.js';
 const NUMBER_OF_CARDS_PER_PAGE = 5;
 const NUMBER_OF_TOP_RATED_FILMS = 2;
 const NUMBER_OF_MOST_COMMENTED_FILMS = 2;
@@ -32,13 +32,14 @@ export class PageController {
     this._search = new Search();
     this._userRating = new UserRating(this._userRank);
     this._menu = new Menu(this._filtersCount);
-    this._statistic = new Statistic();
+    // this._statistic = new Statistic();
     this._sorting = new Sorting();
     this._films = new Films();
     this._filmsAll = new FilmsAll();
     this._filmsMostCommented = new FilmsMostCommented();
     this._filmsTopRated = new FilmsTopRated();
     this._showMoreButton = new ShowMoreButton();
+    this._statisticController = new StatisticController(container);
     // Для предотращение навешивания лишних обработчиков на кнопку
     this._showMoreButtonIsActive = false;
     this._searchIsActive = false;
@@ -128,14 +129,12 @@ export class PageController {
       const searchController = new SearchController(this._query, this._cards);
       this.__cardsAfterSearch = searchController.searchFilm();
       this.__cardsAfterSearch.forEach((card) => this._renderCard(card, this._filmsAll.getElement().querySelector(`.films-list__container`)));
-    }
-    else if (this._filterIsActive) {
+    } else if (this._filterIsActive) {
       const renderedCards = this._filmsAll.getElement().querySelectorAll(`.film-card`);
       renderedCards.forEach((card) => unrender(card));
       this._sortedCards = Menu.filterCards(this._sortedCards, this._currentFilter);
       this._sortedCards.slice(0, this._currentNumberOfCardsOnPage).forEach((card) => this._renderCard(card, this._filmsAll.getElement().querySelector(`.films-list__container`)));
-    }
-    else {
+    } else {
       const renderedCards = document.querySelectorAll(`.film-card`);
       renderedCards.forEach((card) => unrender(card));
       this._renderAllCards(this._sortedCards);
@@ -160,10 +159,12 @@ export class PageController {
         navigationButton.classList.remove(`main-navigation__item--active`);
       }
       if (event.target.classList.contains(`main-navigation__item--additional`)) {
-        this._statistic.getElement().classList.toggle(`visually-hidden`);
-        this._sorting.getElement().classList.toggle(`visually-hidden`);
-        this._films.getElement().classList.toggle(`visually-hidden`);
+        this._sorting.getElement().classList.add(`visually-hidden`);
+        this._statisticController.show(this._cards);
+        this._films.getElement().classList.add(`visually-hidden`);
       } else {
+        this._films.getElement().classList.remove(`visually-hidden`);
+        this._sorting.getElement().classList.remove(`visually-hidden`);
         document.querySelector(`.films-list .films-list__container`).innerHTML = ``;
         this._showMoreButton.removeElement();
         this._showMoreButtonIsActive = false;
@@ -172,14 +173,11 @@ export class PageController {
         this._sortedCards = Menu.filterCards(this._cards, this._currentFilter);
         if (this._currentNumberOfCardsOnPage >= this._sortedCards.length) {
           numberOfCardsToShow = this._sortedCards.length;
-          // this._showMoreButton.removeElement();
-          // this._showMoreButtonIsActive = false;
         } else {
           numberOfCardsToShow = this._currentNumberOfCardsOnPage;
         }
 
         this._sortedCards.slice(0, numberOfCardsToShow).forEach((card) => this._renderCard(card, this._filmsAll.getElement().querySelector(`.films-list__container`)));
-        // this._renderShowMoreButton();
         this._currentNumberOfCardsOnPage = numberOfCardsToShow;
       }
       if (event.target.getAttribute(`href`) === `#all`) {
@@ -195,13 +193,11 @@ export class PageController {
     render(header, this._search.getElement());
     render(header, this._userRating.getElement());
     render(this._container, this._menu.getElement());
-    render(this._container, this._statistic.getElement());
     render(this._container, this._sorting.getElement());
     this._renderAllCards();
     // Добавляем обработчик события для сортировки
     this._sorting.getElement().addEventListener(`click`, (evt) => this._onSortLinkClick(evt));
     // Добавляем обработчик события для показа статистики
-    // this._menu.getElement().querySelector(`.main-navigation__item--additional`).addEventListener(`click`, () => this._onStatisticButtonClick());
     this._menu.getElement().addEventListener(`click`, (evt) => this._onStatisticButtonClick(evt));
   }
 
