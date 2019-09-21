@@ -1,13 +1,13 @@
-import {AbstractComponent} from './abstract-component.js';
-import {UserRating} from '../components/user-rating.js';
+import { AbstractComponent } from './abstract-component.js';
+import { UserRating } from '../components/user-rating.js';
 import moment from 'moment';
 
 const FILTERS = [
-  {title: `All time`, value: `all-time`},
-  {title: `Today`, value: `today`},
-  {title: `Week`, value: `week`},
-  {title: `Month`, value: `month`},
-  {title: `Year`, value: `year`},
+  { title: `All time`, value: `all-time` },
+  { title: `Today`, value: `today` },
+  { title: `Week`, value: `week` },
+  { title: `Month`, value: `month` },
+  { title: `Year`, value: `year` },
 ];
 
 // Считаем количество для каждого жанра
@@ -19,20 +19,26 @@ const getCounts = (array) => {
   }
   // сортируем в порядке убывания значения ключа
   // Берём массив ключей объекта, сортируем его
+  console.log(counts);
   const sortedArrayOfKeys = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
   // Преобразуем массив обратно в объект
-  const resultingObject = sortedArrayOfKeys.reduce((obj, key) => Object.assign(obj, {[key]: counts[key]}), {});
+  console.log(sortedArrayOfKeys);
+  const resultingObject = sortedArrayOfKeys.reduce((obj, key) => Object.assign(obj, { [key]: counts[key] }), {});
+  console.log(resultingObject);
   return resultingObject;
 };
 
 export const getMostFrequent = (array) => {
+  console.log(array);
   const counts = getCounts(array);
-  const maxCount = Math.max(...Object.values(counts));
-  return Object.keys(counts).filter((k) => counts[k] === maxCount);
+  console.log(counts);
+  // rarestGenre = null;
+  // return counts.IndObject.keys(counts).reduce(((accum, item) => (counts[item] < accum) ? counts[item] : accum), 100);
+  return Object.keys(counts).find((k) => counts[k] === Math.max(...Object.values(counts)));
 };
 
 export class Statistic extends AbstractComponent {
-  constructor({rank, watchedQuantity, watchedDuration, topGenre, activeFilter}) {
+  constructor({ rank, watchedQuantity, watchedDuration, topGenre, activeFilter }) {
     super();
     this._rank = rank;
     this._watchedQuantity = watchedQuantity;

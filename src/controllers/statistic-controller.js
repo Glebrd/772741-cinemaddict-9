@@ -50,7 +50,7 @@ export class StatisticController {
       this._allGenres = this._allGenres.reduce((array, genre) => array.concat(genre));
     }
     // Определяем топ жанр
-    this._topGenre = Statistic.getMostFrequentGenre(this._allGenres)[0];
+    this._topGenre = Statistic.getMostFrequentGenre(this._allGenres);
   }
 
   _render() {
@@ -108,6 +108,7 @@ export class StatisticController {
 
   // Настройки Чарта
   _getChart() {
+    console.log(this._allGenres);
     const labels = Object.keys(Statistic.getGenresCounts(this._allGenres));
     const data = Object.values(Statistic.getGenresCounts(this._allGenres));
 
