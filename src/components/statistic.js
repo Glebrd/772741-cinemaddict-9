@@ -9,32 +9,9 @@ const FILTERS = [
   { title: `Month`, value: `month` },
   { title: `Year`, value: `year` },
 ];
-
-// Считаем количество для каждого жанра
-const getCounts = (array) => {
-  let counts = {};
-  for (let i = 0; i < array.length; i++) {
-    let num = array[i];
-    counts[num] = counts[num] ? counts[num] + 1 : 1;
-  }
-  // сортируем в порядке убывания значения ключа
-  // Берём массив ключей объекта, сортируем его
-  console.log(counts);
-  const sortedArrayOfKeys = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
-  // Преобразуем массив обратно в объект
-  console.log(sortedArrayOfKeys);
-  const resultingObject = sortedArrayOfKeys.reduce((obj, key) => Object.assign(obj, { [key]: counts[key] }), {});
-  console.log(resultingObject);
-  return resultingObject;
-};
-
-export const getMostFrequent = (array) => {
-  console.log(array);
-  const counts = getCounts(array);
-  console.log(counts);
-  // rarestGenre = null;
-  // return counts.IndObject.keys(counts).reduce(((accum, item) => (counts[item] < accum) ? counts[item] : accum), 100);
-  return Object.keys(counts).find((k) => counts[k] === Math.max(...Object.values(counts)));
+// Поиск самого чатого жанра
+const getMostFrequent = (genresCount) => {
+  return Object.keys(genresCount).find((key) => genresCount[key] === Math.max(...Object.values(genresCount)));
 };
 
 export class Statistic extends AbstractComponent {
@@ -94,10 +71,8 @@ export class Statistic extends AbstractComponent {
      </section>
    `;
   }
-  static getGenresCounts(array) {
-    return getCounts(array);
-  }
-  static getMostFrequentGenre(array) {
-    return getMostFrequent(array);
+
+  static getMostFrequentGenre(genres) {
+    return getMostFrequent(genres);
   }
 }

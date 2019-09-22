@@ -58,11 +58,11 @@ export class MovieController {
     filmDetails.getElement().querySelector(`.film-details__close-btn`)
       .addEventListener(`click`, onCloseButtonClick);
     // Нажатие на Esc
-    const onDetailsEscPress = (evt) => {
+    const onDetailsEscPress = (event) => {
       if (evt.target.tagName.toLowerCase() === `textarea`) {
         return;
       }
-      onEscButtonPress(evt, closeDetails);
+      onEscButtonPress(event, closeDetails);
     };
 
     // Отрисовка карточки фильма

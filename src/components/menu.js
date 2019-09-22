@@ -2,15 +2,15 @@ import {createElementsFromTemplateAndData} from "../util";
 import {AbstractComponent} from './abstract-component';
 
 const filterCardsByWatchlist = (cards) => {
-  return cards.filter((card) => card.isToWatch === true);
+  return cards.filter((card) => card.isToWatch);
 };
 
 const filterCardsByHistory = (cards) => {
-  return cards.filter((card) => card.isWatched === true);
+  return cards.filter((card) => card.isWatched);
 };
 
 const filterCardsByFavorites = (cards) => {
-  return cards.filter((card) => card.isFavorite === true);
+  return cards.filter((card) => card.isFavorite);
 };
 
 export class Menu extends AbstractComponent {
@@ -53,8 +53,6 @@ export class Menu extends AbstractComponent {
 
   static filterCards(cards, filterType) {
     switch (filterType) {
-      case `#all`:
-        return cards;
       case `watchlist`:
         return filterCardsByWatchlist(cards);
       case `history`:
@@ -62,6 +60,6 @@ export class Menu extends AbstractComponent {
       case `favorites`:
         return filterCardsByFavorites(cards);
     }
-    return null;
+    return cards;
   }
 }

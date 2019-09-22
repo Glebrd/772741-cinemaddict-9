@@ -1,17 +1,17 @@
-import {Search} from '../components/search.js';
-import {UserRating} from '../components/user-rating.js';
-import {Sorting} from '../components/sorting.js';
-import {Menu} from '../components/menu.js';
-import {Films} from '../components/films.js';
-import {FilmsAll} from '../components/films-all.js';
-import {FilmsMostCommented} from '../components/films-most-commented.js';
-import {FilmsTopRated} from '../components/films-top-rated.js';
-import {EmptyFilms} from '../components/empty-films.js';
-import {render, unrender} from '../util.js';
-import {ShowMoreButton} from '../components/show-more-button.js';
-import {MovieController} from './movie-controller.js';
-import {SearchController} from './search-controller.js';
-import {StatisticController} from './statistic-controller.js';
+import { Search } from '../components/search.js';
+import { UserRating } from '../components/user-rating.js';
+import { Sorting } from '../components/sorting.js';
+import { Menu } from '../components/menu.js';
+import { Films } from '../components/films.js';
+import { FilmsAll } from '../components/films-all.js';
+import { FilmsMostCommented } from '../components/films-most-commented.js';
+import { FilmsTopRated } from '../components/films-top-rated.js';
+import { EmptyFilms } from '../components/empty-films.js';
+import { render, unrender } from '../util.js';
+import { ShowMoreButton } from '../components/show-more-button.js';
+import { MovieController } from './movie-controller.js';
+import { SearchController } from './search-controller.js';
+import { StatisticController } from './statistic-controller.js';
 const NUMBER_OF_CARDS_PER_PAGE = 5;
 const NUMBER_OF_TOP_RATED_FILMS = 2;
 const NUMBER_OF_MOST_COMMENTED_FILMS = 2;
@@ -32,7 +32,6 @@ export class PageController {
     this._search = new Search();
     this._userRating = new UserRating(this._userRank);
     this._menu = new Menu(this._filtersCount);
-    // this._statistic = new Statistic();
     this._sorting = new Sorting();
     this._films = new Films();
     this._filmsAll = new FilmsAll();
@@ -49,14 +48,24 @@ export class PageController {
     this._onChangeView = this._onChangeView.bind(this);
     this._onDataChange = this._onDataChange.bind(this);
     this._subscriptions = [];
+  }
 
+  // Отрисовка одной карточки
+  _renderCard(data, container) {
+    const movieController = new MovieController(data, container, this._onDataChange, this._onChangeView);
+    this._subscriptions.push(movieController.setDefaultView.bind(movieController));
+  }
+  // Отрисовка блока карточек
+  _renderCards(cards, component) {
+    const container = component.getElement().querySelector(`.films-list__container`);
+    cards.forEach((card) => this._renderCard(card, container));
   }
 
   // Для добавления карточек, по нажатию на кнопку showMoreButton
   _renderShowMoreButton() {
     // Обработчик клика на кнопку showmore
     const onShowMoreButtonClick = () => {
-      this._sortedCards.slice(this._currentNumberOfCardsOnPage, this._currentNumberOfCardsOnPage + NUMBER_OF_CARDS_PER_PAGE).forEach((card) => this._renderCard(card, this._filmsAll.getElement().querySelector(`.films-list__container`)));
+      this._renderCards(this._sortedCards.slice(this._currentNumberOfCardsOnPage, this._currentNumberOfCardsOnPage + NUMBER_OF_CARDS_PER_PAGE), this._filmsAll);
       this._currentNumberOfCardsOnPage += NUMBER_OF_CARDS_PER_PAGE;
       if (this._sortedCards.length <= this._currentNumberOfCardsOnPage) {
         this._showMoreButton.getElement().removeEventListener(`click`, onShowMoreButtonClick);
@@ -74,30 +83,24 @@ export class PageController {
   }
 
   // Обработчик клика по сортировке
-  _onSortLinkClick(evt) {
-    evt.preventDefault();
-    if (evt.target.tagName !== `A`) {
+  _onSortLinkClick(event) {
+    event.preventDefault();
+    if (event.target.tagName !== `A`) {
       return;
     }
     document.querySelector(`.films-list .films-list__container`).innerHTML = ``;
-    this._sortedCards = Sorting.sortCards(this._cards, evt.target.dataset.sortType);
-    this._sortedCards.slice(0, this._currentNumberOfCardsOnPage).forEach((card) => this._renderCard(card, this._filmsAll.getElement().querySelector(`.films-list__container`)));
+    this._sortedCards = Sorting.sortCards(this._cards, event.target.dataset.sortType);
+    this._renderCards(this._sortedCards.slice(0, this._currentNumberOfCardsOnPage), this._filmsAll);
     let sortingButtons = this._sorting.getElement().querySelectorAll(`.sort__button--active`);
     sortingButtons.forEach((sortingButton) => {
-      if (sortingButton !== evt.target) {
+      if (sortingButton !== event.target) {
         sortingButton.classList.remove(`sort__button--active`);
       }
     });
-    evt.target.classList.add(`sort__button--active`);
+    event.target.classList.add(`sort__button--active`);
   }
 
-  // Отрисовка одной карточки
-  _renderCard(data, container) {
-    const movieController = new MovieController(data, container, this._onDataChange, this._onChangeView);
-    this._subscriptions.push(movieController.setDefaultView.bind(movieController));
-  }
-
-  // Отрисовка всех карточек
+  // Отрисовка всех карточек на странице
   _renderAllCards() {
     // Проверка, есть ли карточки фильмов
     if (this._cards === []) {
@@ -114,9 +117,9 @@ export class PageController {
       const cardsSortedByRating = Sorting.sortCards(this._cards, `rating-down`);
       const cardsSortedByAmountOfComments = Sorting.sortCards(this._cards, `comments-down`);
       // Берём данные карточек и отправляем их в функцию рендера.
-      this._sortedCards.slice(0, this._currentNumberOfCardsOnPage).forEach((card) => this._renderCard(card, this._filmsAll.getElement().querySelector(`.films-list__container`)));
-      cardsSortedByRating.slice(0, NUMBER_OF_TOP_RATED_FILMS).forEach((card) => this._renderCard(card, this._filmsTopRated.getElement().querySelector(`.films-list__container`)));
-      cardsSortedByAmountOfComments.slice(0, NUMBER_OF_MOST_COMMENTED_FILMS).forEach((card) => this._renderCard(card, this._filmsMostCommented.getElement().querySelector(`.films-list__container`)));
+      this._renderCards(this._sortedCards.slice(0, this._currentNumberOfCardsOnPage), this._filmsAll);
+      this._renderCards(cardsSortedByRating.slice(0, NUMBER_OF_TOP_RATED_FILMS), this._filmsTopRated);
+      this._renderCards(cardsSortedByAmountOfComments.slice(0, NUMBER_OF_MOST_COMMENTED_FILMS), this._filmsMostCommented);
     }
   }
 
@@ -127,13 +130,13 @@ export class PageController {
       const renderedCards = document.querySelectorAll(`.film-card`);
       renderedCards.forEach((card) => unrender(card));
       const searchController = new SearchController(this._query, this._cards);
-      this.__cardsAfterSearch = searchController.searchFilm();
-      this.__cardsAfterSearch.forEach((card) => this._renderCard(card, this._filmsAll.getElement().querySelector(`.films-list__container`)));
+      this._cardsAfterSearch = searchController.searchFilm();
+      this._renderCards(this._cardsAfterSearch, this._filmsAll);
     } else if (this._filterIsActive) {
       const renderedCards = this._filmsAll.getElement().querySelectorAll(`.film-card`);
       renderedCards.forEach((card) => unrender(card));
       this._sortedCards = Menu.filterCards(this._sortedCards, this._currentFilter);
-      this._sortedCards.slice(0, this._currentNumberOfCardsOnPage).forEach((card) => this._renderCard(card, this._filmsAll.getElement().querySelector(`.films-list__container`)));
+      this._renderCards(this._sortedCards.slice(0, this._currentNumberOfCardsOnPage), this._filmsAll);
     } else {
       const renderedCards = document.querySelectorAll(`.film-card`);
       renderedCards.forEach((card) => unrender(card));
@@ -145,14 +148,14 @@ export class PageController {
     this._subscriptions.forEach((subscription) => subscription());
   }
 
-  // Добавить обработку всех кнопок статистики и смену цвета
+  // Обработка всех кнопок статистики и смена цвета
   _onStatisticButtonClick(event) {
-    this._filterIsActive = true;
-    let numberOfCardsToShow = null;
-    event.preventDefault();
     if (event.target.tagName !== `A`) {
       return;
     }
+    this._filterIsActive = true;
+    let numberOfCardsToShow = null;
+    event.preventDefault();
     let navigationButtons = this._menu.getElement().querySelectorAll(`.main-navigation__item`);
     navigationButtons.forEach((navigationButton) => {
       if (navigationButton !== event.target) {
@@ -176,8 +179,7 @@ export class PageController {
         } else {
           numberOfCardsToShow = this._currentNumberOfCardsOnPage;
         }
-
-        this._sortedCards.slice(0, numberOfCardsToShow).forEach((card) => this._renderCard(card, this._filmsAll.getElement().querySelector(`.films-list__container`)));
+        this._renderCards(this._sortedCards.slice(0, numberOfCardsToShow), this._filmsAll);
         this._currentNumberOfCardsOnPage = numberOfCardsToShow;
       }
       if (event.target.getAttribute(`href`) === `#all`) {
@@ -196,9 +198,9 @@ export class PageController {
     render(this._container, this._sorting.getElement());
     this._renderAllCards();
     // Добавляем обработчик события для сортировки
-    this._sorting.getElement().addEventListener(`click`, (evt) => this._onSortLinkClick(evt));
+    this._sorting.getElement().addEventListener(`click`, (event) => this._onSortLinkClick(event));
     // Добавляем обработчик события для показа статистики
-    this._menu.getElement().addEventListener(`click`, (evt) => this._onStatisticButtonClick(evt));
+    this._menu.getElement().addEventListener(`click`, (event) => this._onStatisticButtonClick(event));
   }
 
   init() {
@@ -208,8 +210,8 @@ export class PageController {
     const searchInput = document.querySelector(`.search__field`);
     const searchResetButton = document.querySelector(`.search__reset`);
 
-    searchResetButton.addEventListener(`click`, (evt) => {
-      evt.preventDefault();
+    searchResetButton.addEventListener(`click`, (event) => {
+      event.preventDefault();
       searchInput.value = ``;
       const searchController = new SearchController();
       searchController.cancelSearch();
@@ -232,7 +234,7 @@ export class PageController {
         // Получаем массив после поиска
         this._cardsAfterSearch = searchController.searchFilm();
         this._totalCardsAmount = this._cardsAfterSearch.length;
-        this._cardsAfterSearch.forEach((card) => this._renderCard(card, this._filmsAll.getElement().querySelector(`.films-list__container`)));
+        this._renderCards(this._cardsAfterSearch, this._filmsAll);
         this._searchIsActive = true;
       } else if (this._query.length === 0) {
         searchController.cancelSearch();

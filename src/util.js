@@ -96,8 +96,8 @@ export const unrender = (element) => {
   }
 };
 
-export const onEscButtonPress = (evt, action) => {
-  if (evt.keyCode === ESC_KEYCODE) {
+export const onEscButtonPress = (event, action) => {
+  if (event.keyCode === ESC_KEYCODE) {
     action();
   }
 };
