@@ -59,7 +59,7 @@ export class MovieController {
       .addEventListener(`click`, onCloseButtonClick);
     // Нажатие на Esc
     const onDetailsEscPress = (event) => {
-      if (evt.target.tagName.toLowerCase() === `textarea`) {
+      if (event.target.tagName.toLowerCase() === `textarea`) {
         return;
       }
       onEscButtonPress(event, closeDetails);

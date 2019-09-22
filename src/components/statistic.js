@@ -1,13 +1,13 @@
-import { AbstractComponent } from './abstract-component.js';
-import { UserRating } from '../components/user-rating.js';
+import {AbstractComponent} from './abstract-component.js';
+import {UserRating} from '../components/user-rating.js';
 import moment from 'moment';
 
 const FILTERS = [
-  { title: `All time`, value: `all-time` },
-  { title: `Today`, value: `today` },
-  { title: `Week`, value: `week` },
-  { title: `Month`, value: `month` },
-  { title: `Year`, value: `year` },
+  {title: `All time`, value: `all-time`},
+  {title: `Today`, value: `today`},
+  {title: `Week`, value: `week`},
+  {title: `Month`, value: `month`},
+  {title: `Year`, value: `year`},
 ];
 // Поиск самого чатого жанра
 const getMostFrequent = (genresCount) => {
@@ -15,7 +15,7 @@ const getMostFrequent = (genresCount) => {
 };
 
 export class Statistic extends AbstractComponent {
-  constructor({ rank, watchedQuantity, watchedDuration, topGenre, activeFilter }) {
+  constructor({rank, watchedQuantity, watchedDuration, topGenre, activeFilter}) {
     super();
     this._rank = rank;
     this._watchedQuantity = watchedQuantity;

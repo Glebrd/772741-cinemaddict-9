@@ -1,6 +1,6 @@
-import { Statistic } from '../components/statistic';
-import { unrender, render } from '../util';
-import { Menu } from '../components/menu';
+import {Statistic} from '../components/statistic';
+import {unrender, render} from '../util';
+import {Menu} from '../components/menu';
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import moment from 'moment';
@@ -56,7 +56,7 @@ export class StatisticController {
     // Берём массив ключей объекта, сортируем его
     const sortedArrayOfKeys = Object.keys(this._allGenres).sort((a, b) => this._allGenres[b] - this._allGenres[a]);
     // Преобразуем массив обратно в объект
-    this._allGenres = sortedArrayOfKeys.reduce((object, key) => Object.assign(object, { [key]: this._allGenres[key] }), {});
+    this._allGenres = sortedArrayOfKeys.reduce((object, key) => Object.assign(object, {[key]: this._allGenres[key]}), {});
     // Определяем топ жанр
     this._topGenre = Statistic.getMostFrequentGenre(this._allGenres);
   }
@@ -115,9 +115,7 @@ export class StatisticController {
 
   // Настройки Чарта
   _getChart() {
-    console.log(this._allGenres);
     const labels = Object.keys(this._allGenres);
-    const data = Object.values(this._allGenres);
 
     const StatisticBar = {
       data: {
@@ -149,7 +147,7 @@ export class StatisticController {
       labels,
       datasets: [
         {
-          data,
+          data: Object.values(this._allGenres),
           backgroundColor: StatisticBar.data.backgroundColor,
           hoverBackgroundColor: StatisticBar.data.hoverBackgroundColor,
           anchor: StatisticBar.data.anchor,
@@ -159,7 +157,7 @@ export class StatisticController {
     const barOptions = {
       plugins: {
         datalabels: {
-          font: { size: StatisticBar.options.datalabel.fontSize },
+          font: {size: StatisticBar.options.datalabel.fontSize},
           color: StatisticBar.options.datalabel.color,
           anchor: StatisticBar.options.datalabel.anchor,
           align: StatisticBar.options.datalabel.align,
@@ -185,8 +183,8 @@ export class StatisticController {
           },
         }],
       },
-      legend: { display: false },
-      tooltips: { enabled: false },
+      legend: {display: false},
+      tooltips: {enabled: false},
     };
 
     return {
