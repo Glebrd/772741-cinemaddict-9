@@ -1,29 +1,29 @@
-import { Search } from '../components/search.js';
-import { UserRating } from '../components/user-rating.js';
-import { Sorting } from '../components/sorting.js';
-import { Menu } from '../components/menu.js';
-import { Films } from '../components/films.js';
-import { FilmsAll } from '../components/films-all.js';
-import { FilmsMostCommented } from '../components/films-most-commented.js';
-import { FilmsTopRated } from '../components/films-top-rated.js';
-import { EmptyFilms } from '../components/empty-films.js';
-import { render, unrender } from '../util.js';
-import { ShowMoreButton } from '../components/show-more-button.js';
-import { MovieController } from './movie-controller.js';
-import { SearchController } from './search-controller.js';
-import { StatisticController } from './statistic-controller.js';
-import { API } from '../api.js';
+import {Search} from '../components/search.js';
+import {UserRating} from '../components/user-rating.js';
+import {Sorting} from '../components/sorting.js';
+import {Menu} from '../components/menu.js';
+import {Films} from '../components/films.js';
+import {FilmsAll} from '../components/films-all.js';
+import {FilmsMostCommented} from '../components/films-most-commented.js';
+import {FilmsTopRated} from '../components/films-top-rated.js';
+import {EmptyFilms} from '../components/empty-films.js';
+import {render, unrender} from '../util.js';
+import {ShowMoreButton} from '../components/show-more-button.js';
+import {MovieController} from './movie-controller.js';
+import {SearchController} from './search-controller.js';
+import {StatisticController} from './statistic-controller.js';
+import {API} from '../api.js';
 const NUMBER_OF_CARDS_PER_PAGE = 5;
 const NUMBER_OF_TOP_RATED_FILMS = 2;
 const NUMBER_OF_MOST_COMMENTED_FILMS = 2;
 const MINIMAL_QUERY_LENGTH = 3;
 
-const AUTHORIZATION = `Basic dXNlckBwYXNzd29yZAo=${Math.random()}`;
+const AUTHORIZATION = `Basic dXNlckBwYXNzd29yZAo123`;
 const END_POINT = `https://htmlacademy-es-9.appspot.com/cinemaddict`;
 
 export class PageController {
-  constructor(container, cards) {
-    this._api = new API({ endPoint: END_POINT, authorization: AUTHORIZATION });
+  constructor(container) {
+    this._api = new API({endPoint: END_POINT, authorization: AUTHORIZATION});
     this._container = container;
     this._cards = [];
     this._sortedCards = [];
@@ -52,12 +52,13 @@ export class PageController {
     // Для наблюдателя
     this._onChangeView = this._onChangeView.bind(this);
     this._onDataChange = this._onDataChange.bind(this);
+    this._onCommentsChange = this._onCommentsChange.bind(this);
     this._subscriptions = [];
   }
 
   // Отрисовка одной карточки
   _renderCard(data, container) {
-    const movieController = new MovieController(data, container, this._onDataChange, this._onChangeView);
+    const movieController = new MovieController(data, container, this._onDataChange, this._onChangeView, this._onCommentsChange);
     this._subscriptions.push(movieController.setDefaultView.bind(movieController));
   }
   // Отрисовка блока карточек
@@ -76,7 +77,6 @@ export class PageController {
         this._showMoreButton.getElement().removeEventListener(`click`, onShowMoreButtonClick);
         this._showMoreButton.removeElement();
       }
-      console.log(this._sortedCards);
     };
     // Рендер кнопки showmore
     if (this._sortedCards.length > this._currentNumberOfCardsOnPage) {
@@ -160,6 +160,67 @@ export class PageController {
       });
   }
 
+  _onCommentsChange({action, comment = null, filmId = null, commentId = null}) {
+    switch (action) {
+      case `create`:
+        this._api.createComment({
+          comment,
+          filmId,
+        })
+          .then(() => this._api.getFilms())
+          .then((films) => {
+            this._sortedCards = films;
+            this._cards = films;
+          })
+          .then(() => {
+            if (this._searchIsActive) {
+              const renderedCards = document.querySelectorAll(`.film-card`);
+              renderedCards.forEach((card) => unrender(card));
+              const searchController = new SearchController(this._query, this._cards);
+              this._cardsAfterSearch = searchController.searchFilm();
+              this._renderCards(this._cardsAfterSearch, this._filmsAll);
+            } else if (this._filterIsActive) {
+              const renderedCards = this._filmsAll.getElement().querySelectorAll(`.film-card`);
+              renderedCards.forEach((card) => unrender(card));
+              this._sortedCards = Menu.filterCards(this._sortedCards, this._currentFilter);
+              this._renderCards(this._sortedCards.slice(0, this._currentNumberOfCardsOnPage), this._filmsAll);
+            } else {
+              const renderedCards = document.querySelectorAll(`.film-card`);
+              renderedCards.forEach((card) => unrender(card));
+              this._renderAllCards();
+            }
+          });
+        break;
+      case `delete`:
+        this._api.deleteComment({
+          commentId
+        })
+          .then(() => this._api.getFilms())
+          .then((films) => {
+            this._cards = films;
+          })
+          .then((films) => {
+            if (this._searchIsActive) {
+              const renderedCards = document.querySelectorAll(`.film-card`);
+              renderedCards.forEach((card) => unrender(card));
+              const searchController = new SearchController(this._query, this._cards);
+              this._cardsAfterSearch = searchController.searchFilm();
+              this._renderCards(this._cardsAfterSearch, this._filmsAll);
+            } else if (this._filterIsActive) {
+              const renderedCards = this._filmsAll.getElement().querySelectorAll(`.film-card`);
+              renderedCards.forEach((card) => unrender(card));
+              this._sortedCards = Menu.filterCards(this._sortedCards, this._currentFilter);
+              this._renderCards(this._sortedCards.slice(0, this._currentNumberOfCardsOnPage), this._filmsAll);
+            } else {
+              const renderedCards = document.querySelectorAll(`.film-card`);
+              renderedCards.forEach((card) => unrender(card));
+              this._renderAllCards(films);
+            }
+          });
+        break;
+    }
+  }
+
   _onChangeView() {
     this._subscriptions.forEach((subscription) => subscription());
   }
@@ -169,7 +230,6 @@ export class PageController {
     if (event.target.tagName !== `A`) {
       return;
     }
-    console.log(this._sortedCards);
     this._filterIsActive = true;
     let numberOfCardsToShow = null;
     event.preventDefault();
@@ -202,7 +262,6 @@ export class PageController {
         } else {
           numberOfCardsToShow = Math.ceil(this._currentNumberOfCardsOnPage / 5) * 5;
         }
-        console.log(this._sortedCards);
         this._renderCards(this._sortedCards.slice(0, numberOfCardsToShow), this._filmsAll);
         this._currentNumberOfCardsOnPage = numberOfCardsToShow;
       }

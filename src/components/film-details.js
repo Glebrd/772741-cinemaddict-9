@@ -1,4 +1,3 @@
-import {createElementsFromTemplateAndData, convertToFullDate, convertMinutesToMovieTimeFormat} from '../util.js';
 import {AbstractComponent} from './abstract-component.js';
 import {FilmRating} from './film-rating.js';
 import moment from 'moment';
@@ -6,8 +5,8 @@ import 'moment-duration-format';
 
 const checkActiveButton = (isActive) => isActive ? `checked` : ``;
 
-const getGenreMarkup = (genre) =>
-  `<span class="film-details__genre">${genre}</span>`;
+// const getGenreMarkup = (genre) =>
+//   `<span class="film-details__genre">${genre}</span>`;
 
 export class FilmDetails extends AbstractComponent {
   constructor({title, comments, genres, poster, age, originalTitle, rating, director, writers, actors, releaseDate, duration, country, description, isToWatch, isWatched, isFavorite}) {
@@ -85,7 +84,7 @@ export class FilmDetails extends AbstractComponent {
               <tr class="film-details__row">
                 <td class="film-details__term">Genres</td>
                 <td class="film-details__cell">
-                ${Math.random()}
+                Временная заглушка
                 </td>
               </tr>
             </table>
