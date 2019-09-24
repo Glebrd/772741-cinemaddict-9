@@ -141,6 +141,7 @@ export class PageController {
         this._sortedCards = films;
         this._cards = films;
       }).then(() => {
+        // Этот блок позже выделю в отдельную функцию, думаю
         if (this._searchIsActive) {
           const renderedCards = document.querySelectorAll(`.film-card`);
           renderedCards.forEach((card) => unrender(card));
@@ -157,6 +158,7 @@ export class PageController {
           renderedCards.forEach((card) => unrender(card));
           this._renderAllCards(this._sortedCards);
         }
+        //
       });
   }
 
@@ -173,6 +175,7 @@ export class PageController {
             this._cards = films;
           })
           .then(() => {
+            // Этот блок позже выделю в отдельную функцию, думаю
             if (this._searchIsActive) {
               const renderedCards = document.querySelectorAll(`.film-card`);
               renderedCards.forEach((card) => unrender(card));
@@ -189,6 +192,7 @@ export class PageController {
               renderedCards.forEach((card) => unrender(card));
               this._renderAllCards();
             }
+            //
           });
         break;
       case `delete`:
