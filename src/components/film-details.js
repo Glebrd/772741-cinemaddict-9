@@ -1,6 +1,8 @@
 import {createElementsFromTemplateAndData, convertToFullDate, convertMinutesToMovieTimeFormat} from '../util.js';
 import {AbstractComponent} from './abstract-component.js';
 import {FilmRating} from './film-rating.js';
+import moment from 'moment';
+import 'moment-duration-format';
 
 const checkActiveButton = (isActive) => isActive ? `checked` : ``;
 
@@ -66,15 +68,15 @@ export class FilmDetails extends AbstractComponent {
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Actors</td>
-                <td class="film-details__cell">${this._actors.join(`, `)}</td>
+                <td class="film-details__cell">${this._actors}</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Release Date</td>
-                <td class="film-details__cell">${convertToFullDate(this._releaseDate)}</td>
+                <td class="film-details__cell">${moment(this._releaseDate).format(`DD MMM YYYY`)}</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Runtime</td>
-                <td class="film-details__cell">${convertMinutesToMovieTimeFormat(this._duration)}</td>
+                <td class="film-details__cell">${moment.duration(this._duration, `minutes`).format(`h[h] m[m]`)}</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Country</td>
@@ -83,7 +85,7 @@ export class FilmDetails extends AbstractComponent {
               <tr class="film-details__row">
                 <td class="film-details__term">Genres</td>
                 <td class="film-details__cell">
-                ${createElementsFromTemplateAndData(this._genres, getGenreMarkup)}
+                ${Math.random()}
                 </td>
               </tr>
             </table>

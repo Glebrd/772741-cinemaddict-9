@@ -1,37 +1,42 @@
-import {Search} from '../components/search.js';
-import {UserRating} from '../components/user-rating.js';
-import {Sorting} from '../components/sorting.js';
-import {Menu} from '../components/menu.js';
-import {Films} from '../components/films.js';
-import {FilmsAll} from '../components/films-all.js';
-import {FilmsMostCommented} from '../components/films-most-commented.js';
-import {FilmsTopRated} from '../components/films-top-rated.js';
-import {EmptyFilms} from '../components/empty-films.js';
-import {render, unrender} from '../util.js';
-import {ShowMoreButton} from '../components/show-more-button.js';
-import {MovieController} from './movie-controller.js';
-import {SearchController} from './search-controller.js';
-import {StatisticController} from './statistic-controller.js';
+import { Search } from '../components/search.js';
+import { UserRating } from '../components/user-rating.js';
+import { Sorting } from '../components/sorting.js';
+import { Menu } from '../components/menu.js';
+import { Films } from '../components/films.js';
+import { FilmsAll } from '../components/films-all.js';
+import { FilmsMostCommented } from '../components/films-most-commented.js';
+import { FilmsTopRated } from '../components/films-top-rated.js';
+import { EmptyFilms } from '../components/empty-films.js';
+import { render, unrender } from '../util.js';
+import { ShowMoreButton } from '../components/show-more-button.js';
+import { MovieController } from './movie-controller.js';
+import { SearchController } from './search-controller.js';
+import { StatisticController } from './statistic-controller.js';
+import { API } from '../api.js';
 const NUMBER_OF_CARDS_PER_PAGE = 5;
 const NUMBER_OF_TOP_RATED_FILMS = 2;
 const NUMBER_OF_MOST_COMMENTED_FILMS = 2;
 const MINIMAL_QUERY_LENGTH = 3;
 
+const AUTHORIZATION = `Basic dXNlckBwYXNzd29yZAo=${Math.random()}`;
+const END_POINT = `https://htmlacademy-es-9.appspot.com/cinemaddict`;
+
 export class PageController {
   constructor(container, cards) {
+    this._api = new API({ endPoint: END_POINT, authorization: AUTHORIZATION });
     this._container = container;
-    this._cards = cards;
-    this._sortedCards = this._cards;
+    this._cards = [];
+    this._sortedCards = [];
     this._query = null;
     this._cardsAfterSearch = null;
-    this._filtersCount = Menu.getFiltersCount(cards);
-    this._userRank = UserRating.getUserRank(this._filtersCount[this._filtersCount.findIndex((element) => element.title === `History`)].count);
+    this._filtersCount = null;
+    this._userRank = null;
     // Текущее количество карточек на странице
     this._currentNumberOfCardsOnPage = NUMBER_OF_CARDS_PER_PAGE;
     // Создаём экземпляры объектов (компонентов)
     this._search = new Search();
-    this._userRating = new UserRating(this._userRank);
-    this._menu = new Menu(this._filtersCount);
+    this._userRating = null;
+    this._menu = null;
     this._sorting = new Sorting();
     this._films = new Films();
     this._filmsAll = new FilmsAll();
@@ -71,6 +76,7 @@ export class PageController {
         this._showMoreButton.getElement().removeEventListener(`click`, onShowMoreButtonClick);
         this._showMoreButton.removeElement();
       }
+      console.log(this._sortedCards);
     };
     // Рендер кнопки showmore
     if (this._sortedCards.length > this._currentNumberOfCardsOnPage) {
@@ -123,25 +129,35 @@ export class PageController {
     }
   }
 
-  _onDataChange(newData, oldData) {
-    const index = this._sortedCards.findIndex((card) => card === oldData);
-    this._sortedCards[index] = newData;
-    if (this._searchIsActive) {
-      const renderedCards = document.querySelectorAll(`.film-card`);
-      renderedCards.forEach((card) => unrender(card));
-      const searchController = new SearchController(this._query, this._cards);
-      this._cardsAfterSearch = searchController.searchFilm();
-      this._renderCards(this._cardsAfterSearch, this._filmsAll);
-    } else if (this._filterIsActive) {
-      const renderedCards = this._filmsAll.getElement().querySelectorAll(`.film-card`);
-      renderedCards.forEach((card) => unrender(card));
-      this._sortedCards = Menu.filterCards(this._sortedCards, this._currentFilter);
-      this._renderCards(this._sortedCards.slice(0, this._currentNumberOfCardsOnPage), this._filmsAll);
-    } else {
-      const renderedCards = document.querySelectorAll(`.film-card`);
-      renderedCards.forEach((card) => unrender(card));
-      this._renderAllCards(this._sortedCards);
-    }
+  _onDataChange(newData) {
+    // const index = this._sortedCards.findIndex((card) => card === oldData);
+    // this._sortedCards[index] = newData;
+    this._api.updateFilm({
+      id: newData.id,
+      data: newData.toRAW()
+    })
+      .then(() => this._api.getFilms())
+      .then((films) => {
+        this._sortedCards = films;
+        this._cards = films;
+      }).then(() => {
+        if (this._searchIsActive) {
+          const renderedCards = document.querySelectorAll(`.film-card`);
+          renderedCards.forEach((card) => unrender(card));
+          const searchController = new SearchController(this._query, this._cards);
+          this._cardsAfterSearch = searchController.searchFilm();
+          this._renderCards(this._cardsAfterSearch, this._filmsAll);
+        } else if (this._filterIsActive) {
+          const renderedCards = this._filmsAll.getElement().querySelectorAll(`.film-card`);
+          renderedCards.forEach((card) => unrender(card));
+          this._sortedCards = Menu.filterCards(this._sortedCards, this._currentFilter);
+          this._renderCards(this._sortedCards.slice(0, this._currentNumberOfCardsOnPage), this._filmsAll);
+        } else {
+          const renderedCards = document.querySelectorAll(`.film-card`);
+          renderedCards.forEach((card) => unrender(card));
+          this._renderAllCards(this._sortedCards);
+        }
+      });
   }
 
   _onChangeView() {
@@ -153,6 +169,7 @@ export class PageController {
     if (event.target.tagName !== `A`) {
       return;
     }
+    console.log(this._sortedCards);
     this._filterIsActive = true;
     let numberOfCardsToShow = null;
     event.preventDefault();
@@ -161,24 +178,31 @@ export class PageController {
       if (navigationButton !== event.target) {
         navigationButton.classList.remove(`main-navigation__item--active`);
       }
+      // Открываем статистику
       if (event.target.classList.contains(`main-navigation__item--additional`)) {
         this._sorting.getElement().classList.add(`visually-hidden`);
         this._statisticController.show(this._cards);
         this._films.getElement().classList.add(`visually-hidden`);
       } else {
+        // Обработка кликов по фильтрам
         this._films.getElement().classList.remove(`visually-hidden`);
         this._sorting.getElement().classList.remove(`visually-hidden`);
         document.querySelector(`.films-list .films-list__container`).innerHTML = ``;
+        // Сбрасываем кнопку showMore
         this._showMoreButton.removeElement();
         this._showMoreButtonIsActive = false;
         this._renderShowMoreButton();
+        // Фильтруем
         this._currentFilter = event.target.getAttribute(`href`);
         this._sortedCards = Menu.filterCards(this._cards, this._currentFilter);
-        if (this._currentNumberOfCardsOnPage >= this._sortedCards.length) {
+        // Если в текущем фильтре карточек больше (с округлением до кратного 5), чем в новом, то показываем все карточки нового фильтра
+        if (Math.ceil(this._currentNumberOfCardsOnPage / 5) * 5 >= this._sortedCards.length) {
           numberOfCardsToShow = this._sortedCards.length;
+          // Если в текущем фильтре карточек меньше, чем в новом, то выводим ближайшее кратное 5.
         } else {
-          numberOfCardsToShow = this._currentNumberOfCardsOnPage;
+          numberOfCardsToShow = Math.ceil(this._currentNumberOfCardsOnPage / 5) * 5;
         }
+        console.log(this._sortedCards);
         this._renderCards(this._sortedCards.slice(0, numberOfCardsToShow), this._filmsAll);
         this._currentNumberOfCardsOnPage = numberOfCardsToShow;
       }
@@ -204,45 +228,53 @@ export class PageController {
   }
 
   init() {
-    this._renderPage();
-
-    // Поиск
-    const searchInput = document.querySelector(`.search__field`);
-    const searchResetButton = document.querySelector(`.search__reset`);
-
-    searchResetButton.addEventListener(`click`, (event) => {
-      event.preventDefault();
-      searchInput.value = ``;
-      const searchController = new SearchController();
-      searchController.cancelSearch();
-      this._showMoreButtonIsActive = false;
-      this._renderPage();
-      this._searchIsActive = false;
-    });
-
-    searchInput.addEventListener(`input`, () => {
-      this._query = searchInput.value;
-      const searchController = new SearchController(this._query, this._cards);
-
-      if (this._query.length >= MINIMAL_QUERY_LENGTH) {
-        // Удаляем элементы, которых нет на странице поиска
-        this._menu.removeElement();
-        this._sorting.removeElement();
-        this._filmsMostCommented.removeElement();
-        this._filmsTopRated.removeElement();
-        this._showMoreButton.removeElement();
-        // Получаем массив после поиска
-        this._cardsAfterSearch = searchController.searchFilm();
-        this._totalCardsAmount = this._cardsAfterSearch.length;
-        this._renderCards(this._cardsAfterSearch, this._filmsAll);
-        this._searchIsActive = true;
-      } else if (this._query.length === 0) {
-        searchController.cancelSearch();
-        this._searchIsActive = false;
+    this._api.getFilms()
+      .then((films) => {
+        this._cards = films;
+        this._sortedCards = films;
+      }).then(() => {
+        this._filtersCount = Menu.getFiltersCount(this._sortedCards);
+        this._userRank = UserRating.getUserRank(this._filtersCount[this._filtersCount.findIndex((element) => element.title === `History`)].count);
+        this._userRating = new UserRating(this._userRank);
+        this._menu = new Menu(this._filtersCount);
         this._renderPage();
-        this._searchIsActive = false;
-      }
-    });
-  }
+        // Поиск
+        const searchInput = document.querySelector(`.search__field`);
+        const searchResetButton = document.querySelector(`.search__reset`);
 
+        searchResetButton.addEventListener(`click`, (event) => {
+          event.preventDefault();
+          searchInput.value = ``;
+          const searchController = new SearchController();
+          searchController.cancelSearch();
+          this._showMoreButtonIsActive = false;
+          this._renderPage();
+          this._searchIsActive = false;
+        });
+
+        searchInput.addEventListener(`input`, () => {
+          this._query = searchInput.value;
+          const searchController = new SearchController(this._query, this._cards);
+
+          if (this._query.length >= MINIMAL_QUERY_LENGTH) {
+            // Удаляем элементы, которых нет на странице поиска
+            this._menu.removeElement();
+            this._sorting.removeElement();
+            this._filmsMostCommented.removeElement();
+            this._filmsTopRated.removeElement();
+            this._showMoreButton.removeElement();
+            // Получаем массив после поиска
+            this._cardsAfterSearch = searchController.searchFilm();
+            this._totalCardsAmount = this._cardsAfterSearch.length;
+            this._renderCards(this._cardsAfterSearch, this._filmsAll);
+            this._searchIsActive = true;
+          } else if (this._query.length === 0) {
+            searchController.cancelSearch();
+            this._searchIsActive = false;
+            this._renderPage();
+            this._searchIsActive = false;
+          }
+        });
+      });
+  }
 }

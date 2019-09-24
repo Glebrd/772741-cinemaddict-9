@@ -1,5 +1,7 @@
-import {convertMinutesToMovieTimeFormat} from "../util";
+
 import {AbstractComponent} from './abstract-component';
+import moment from 'moment';
+import 'moment-duration-format';
 
 const checkActiveButton = (isActive) => isActive ? `film-card__controls-item--active` : ``;
 export class Card extends AbstractComponent {
@@ -23,9 +25,9 @@ export class Card extends AbstractComponent {
     <h3 class="film-card__title">${this._title}</h3>
     <p class="film-card__rating">${this._rating}</p>
     <p class="film-card__info">
-      <span class="film-card__year">${this._releaseDate.getFullYear()}</span>
-      <span class="film-card__duration">${convertMinutesToMovieTimeFormat(this._duration)}</span>
-      <span class="film-card__genre">${this._genres[0]}</span>
+      <span class="film-card__year">${moment(this._releaseDate).format(`YYYY`)}</span>
+      <span class="film-card__duration">${moment.duration(this._duration, `minutes`).format(`h[h] m[m]`)}</span>
+      <span class="film-card__genre">${this._genres[0] || ``}</span>
     </p>
     <img src="${this._poster}" alt="" class="film-card__poster">
     <p class="film-card__description">${this._description}</p>
