@@ -1,11 +1,9 @@
 import {Card} from '../components/card.js';
 import {FilmDetails} from '../components/film-details.js';
-import {render, unrender, onEscButtonPress} from '../util.js';
+import {render, unrender, AUTHORIZATION, END_POINT, onEscButtonPress} from '../util.js';
 import {Emoji} from '../components/emoji.js';
 import {Comment} from '../components/comment.js';
 import {API} from '../api.js';
-const AUTHORIZATION = `Basic dXNlckBwYXNzd29yZAo123`;
-const END_POINT = `https://htmlacademy-es-9.appspot.com/cinemaddict`;
 const body = document.querySelector(`body`);
 export class MovieController {
   constructor(card, container, onDataChange, onChangeView, onCommentsChange) {

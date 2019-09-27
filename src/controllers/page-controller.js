@@ -8,7 +8,7 @@ import {FilmsMostCommented} from '../components/films-most-commented.js';
 import {FilmsTopRated} from '../components/films-top-rated.js';
 import {EmptyFilms} from '../components/empty-films.js';
 import {FooterStatistic} from '../components/footer-statistic';
-import {render, unrender} from '../util.js';
+import {render, unrender, AUTHORIZATION, END_POINT} from '../util.js';
 import {ShowMoreButton} from '../components/show-more-button.js';
 import {MovieController} from './movie-controller.js';
 import {SearchController} from './search-controller.js';
@@ -19,8 +19,6 @@ const NUMBER_OF_TOP_RATED_FILMS = 2;
 const NUMBER_OF_MOST_COMMENTED_FILMS = 2;
 const MINIMAL_QUERY_LENGTH = 3;
 let errorFlag = false;
-const AUTHORIZATION = `Basic dXNlckBwYXNzd29yZAo123`;
-const END_POINT = `https://htmlacademy-es-9.appspot.com/cinemaddict`;
 
 export class PageController {
   constructor(container) {

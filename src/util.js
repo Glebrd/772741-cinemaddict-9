@@ -1,4 +1,6 @@
 const ESC_KEYCODE = 27;
+export const AUTHORIZATION = `Basic dXNlckBwYXNzd29yZAo123`;
+export const END_POINT = `https://htmlacademy-es-9.appspot.com/cinemaddict`;
 let currentID = -1;
 // Генерация уникальных ID
 export const getID = () => {
