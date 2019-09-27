@@ -1,9 +1,9 @@
-import { Card } from '../components/card.js';
-import { FilmDetails } from '../components/film-details.js';
-import { render, unrender, onEscButtonPress } from '../util.js';
-import { Emoji } from '../components/emoji.js';
-import { Comment } from '../components/comment.js';
-import { API } from '../api.js';
+import {Card} from '../components/card.js';
+import {FilmDetails} from '../components/film-details.js';
+import {render, unrender, onEscButtonPress} from '../util.js';
+import {Emoji} from '../components/emoji.js';
+import {Comment} from '../components/comment.js';
+import {API} from '../api.js';
 const AUTHORIZATION = `Basic dXNlckBwYXNzd29yZAo123`;
 const END_POINT = `https://htmlacademy-es-9.appspot.com/cinemaddict`;
 const body = document.querySelector(`body`);
@@ -15,7 +15,7 @@ export class MovieController {
     this._onCommentsChange = onCommentsChange;
     this._container = container;
     this._api = new API({endPoint: END_POINT, authorization: AUTHORIZATION});
-    this._currentDeleteBtn = null;
+    this._currentDeleteButton = null;
     this.init();
   }
 
@@ -30,8 +30,8 @@ export class MovieController {
   }
 
   onCommentDeleteError() {
-    this._currentDeleteBtn.disabled = false;
-    this._currentDeleteBtn.textContent = `Delete`;
+    this._currentDeleteButton.disabled = false;
+    this._currentDeleteButton.textContent = `Delete`;
   }
 
   init() {
@@ -104,7 +104,7 @@ export class MovieController {
       filmDetails.getElement().querySelector(`.film-details__comment-input`).disabled = true;
     };
 
-    const blockDeleteBtn = (button) => {
+    const blockDeleteButton = (button) => {
       button.disabled = true;
       button.textContent = `Deleting…`;
     };
@@ -112,8 +112,8 @@ export class MovieController {
     const onCommentDelete = (event) => {
       if (event.target.classList.contains(`film-details__comment-delete`)) {
         event.preventDefault();
-        this._currentDeleteBtn = event.target;
-        blockDeleteBtn(event.target);
+        this._currentDeleteButton = event.target;
+        blockDeleteButton(event.target);
         this._onCommentsChange({action: `delete`, commentId: event.currentTarget.dataset.commentId, onError: this.onCommentDeleteError.bind(this)});
       }
     };
