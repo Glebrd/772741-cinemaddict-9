@@ -11,7 +11,7 @@ const toJSON = (response) => {
   return response.json();
 };
 
-export const API = class {
+export class API {
   constructor({endPoint, authorization}) {
     this._endPoint = endPoint;
     this._authorization = authorization;
@@ -63,4 +63,4 @@ export const API = class {
     return this._load({url: `comments/${commentId}`, method: `DELETE`});
   }
 
-};
+}

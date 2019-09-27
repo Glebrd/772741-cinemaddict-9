@@ -34,7 +34,6 @@ export class SearchController {
 
   // Отмена поиска
   cancelSearch() {
-    // document.querySelector(`.result`).remove();
     this._resultOfSearch.removeElement();
     document.querySelector(`.films-list__container`).innerHTML = ``;
   }

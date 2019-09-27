@@ -7,6 +7,7 @@ import {FilmsAll} from '../components/films-all.js';
 import {FilmsMostCommented} from '../components/films-most-commented.js';
 import {FilmsTopRated} from '../components/films-top-rated.js';
 import {EmptyFilms} from '../components/empty-films.js';
+import {FooterStatistic} from '../components/footer-statistic';
 import {render, unrender} from '../util.js';
 import {ShowMoreButton} from '../components/show-more-button.js';
 import {MovieController} from './movie-controller.js';
@@ -17,7 +18,7 @@ const NUMBER_OF_CARDS_PER_PAGE = 5;
 const NUMBER_OF_TOP_RATED_FILMS = 2;
 const NUMBER_OF_MOST_COMMENTED_FILMS = 2;
 const MINIMAL_QUERY_LENGTH = 3;
-
+let errorFlag = false;
 const AUTHORIZATION = `Basic dXNlckBwYXNzd29yZAo123`;
 const END_POINT = `https://htmlacademy-es-9.appspot.com/cinemaddict`;
 
@@ -44,6 +45,7 @@ export class PageController {
     this._filmsTopRated = new FilmsTopRated();
     this._showMoreButton = new ShowMoreButton();
     this._statisticController = new StatisticController(container);
+    this._footerStatistic = new FooterStatistic(this._sortedCards);
     // Для предотращение навешивания лишних обработчиков на кнопку
     this._showMoreButtonIsActive = false;
     this._searchIsActive = false;
@@ -117,6 +119,7 @@ export class PageController {
       render(this._films.getElement(), this._filmsAll.getElement());
       render(this._films.getElement(), this._filmsMostCommented.getElement());
       render(this._films.getElement(), this._filmsTopRated.getElement());
+      render(document.querySelector(`.footer`), new FooterStatistic(this._sortedCards).getElement());
       this._renderShowMoreButton();
       // Массово рендерим карточки фильмов
       // Сортируем данные карточек
@@ -129,9 +132,30 @@ export class PageController {
     }
   }
 
+  _refreshPage(onError) {
+    if (errorFlag) {
+      onError();
+      return;
+    } else if (this._searchIsActive) {
+      const renderedCards = document.querySelectorAll(`.film-card`);
+      renderedCards.forEach((card) => unrender(card));
+      const searchController = new SearchController(this._query, this._cards);
+      this._cardsAfterSearch = searchController.searchFilm();
+      this._renderCards(this._cardsAfterSearch, this._filmsAll);
+    } else if (this._filterIsActive) {
+      const renderedCards = this._filmsAll.getElement().querySelectorAll(`.film-card`);
+      renderedCards.forEach((card) => unrender(card));
+      this._sortedCards = Menu.filterCards(this._sortedCards, this._currentFilter);
+      this._renderCards(this._sortedCards.slice(0, this._currentNumberOfCardsOnPage), this._filmsAll);
+    } else {
+      const renderedCards = document.querySelectorAll(`.film-card`);
+      renderedCards.forEach((card) => unrender(card));
+      this._renderAllCards();
+    }
+  }
+
   _onDataChange(newData) {
-    // const index = this._sortedCards.findIndex((card) => card === oldData);
-    // this._sortedCards[index] = newData;
+    errorFlag = false;
     this._api.updateFilm({
       id: newData.id,
       data: newData.toRAW()
@@ -141,28 +165,11 @@ export class PageController {
         this._sortedCards = films;
         this._cards = films;
       }).then(() => {
-        // Этот блок позже выделю в отдельную функцию, думаю
-        if (this._searchIsActive) {
-          const renderedCards = document.querySelectorAll(`.film-card`);
-          renderedCards.forEach((card) => unrender(card));
-          const searchController = new SearchController(this._query, this._cards);
-          this._cardsAfterSearch = searchController.searchFilm();
-          this._renderCards(this._cardsAfterSearch, this._filmsAll);
-        } else if (this._filterIsActive) {
-          const renderedCards = this._filmsAll.getElement().querySelectorAll(`.film-card`);
-          renderedCards.forEach((card) => unrender(card));
-          this._sortedCards = Menu.filterCards(this._sortedCards, this._currentFilter);
-          this._renderCards(this._sortedCards.slice(0, this._currentNumberOfCardsOnPage), this._filmsAll);
-        } else {
-          const renderedCards = document.querySelectorAll(`.film-card`);
-          renderedCards.forEach((card) => unrender(card));
-          this._renderAllCards(this._sortedCards);
-        }
-        //
+        this._refreshPage();
       });
   }
-
-  _onCommentsChange({action, comment = null, filmId = null, commentId = null}) {
+  _onCommentsChange({action, comment = null, filmId = null, commentId = null, onError = null}) {
+    errorFlag = false;
     switch (action) {
       case `create`:
         this._api.createComment({
@@ -174,25 +181,11 @@ export class PageController {
             this._sortedCards = films;
             this._cards = films;
           })
+          .catch(() => {
+            errorFlag = true;
+          })
           .then(() => {
-            // Этот блок позже выделю в отдельную функцию, думаю
-            if (this._searchIsActive) {
-              const renderedCards = document.querySelectorAll(`.film-card`);
-              renderedCards.forEach((card) => unrender(card));
-              const searchController = new SearchController(this._query, this._cards);
-              this._cardsAfterSearch = searchController.searchFilm();
-              this._renderCards(this._cardsAfterSearch, this._filmsAll);
-            } else if (this._filterIsActive) {
-              const renderedCards = this._filmsAll.getElement().querySelectorAll(`.film-card`);
-              renderedCards.forEach((card) => unrender(card));
-              this._sortedCards = Menu.filterCards(this._sortedCards, this._currentFilter);
-              this._renderCards(this._sortedCards.slice(0, this._currentNumberOfCardsOnPage), this._filmsAll);
-            } else {
-              const renderedCards = document.querySelectorAll(`.film-card`);
-              renderedCards.forEach((card) => unrender(card));
-              this._renderAllCards();
-            }
-            //
+            this._refreshPage(onError);
           });
         break;
       case `delete`:
@@ -203,23 +196,11 @@ export class PageController {
           .then((films) => {
             this._cards = films;
           })
-          .then((films) => {
-            if (this._searchIsActive) {
-              const renderedCards = document.querySelectorAll(`.film-card`);
-              renderedCards.forEach((card) => unrender(card));
-              const searchController = new SearchController(this._query, this._cards);
-              this._cardsAfterSearch = searchController.searchFilm();
-              this._renderCards(this._cardsAfterSearch, this._filmsAll);
-            } else if (this._filterIsActive) {
-              const renderedCards = this._filmsAll.getElement().querySelectorAll(`.film-card`);
-              renderedCards.forEach((card) => unrender(card));
-              this._sortedCards = Menu.filterCards(this._sortedCards, this._currentFilter);
-              this._renderCards(this._sortedCards.slice(0, this._currentNumberOfCardsOnPage), this._filmsAll);
-            } else {
-              const renderedCards = document.querySelectorAll(`.film-card`);
-              renderedCards.forEach((card) => unrender(card));
-              this._renderAllCards(films);
-            }
+          .catch(() => {
+            errorFlag = true;
+          })
+          .then(() => {
+            this._refreshPage(onError);
           });
         break;
     }

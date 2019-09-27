@@ -1,9 +1,9 @@
-import {Card} from '../components/card.js';
-import {FilmDetails} from '../components/film-details.js';
-import {render, unrender, onEscButtonPress} from '../util.js';
-import {Emoji} from '../components/emoji.js';
-import {Comment} from '../components/comment.js';
-import {API} from '../api.js';
+import { Card } from '../components/card.js';
+import { FilmDetails } from '../components/film-details.js';
+import { render, unrender, onEscButtonPress } from '../util.js';
+import { Emoji } from '../components/emoji.js';
+import { Comment } from '../components/comment.js';
+import { API } from '../api.js';
 const AUTHORIZATION = `Basic dXNlckBwYXNzd29yZAo123`;
 const END_POINT = `https://htmlacademy-es-9.appspot.com/cinemaddict`;
 const body = document.querySelector(`body`);
@@ -15,12 +15,30 @@ export class MovieController {
     this._onCommentsChange = onCommentsChange;
     this._container = container;
     this._api = new API({endPoint: END_POINT, authorization: AUTHORIZATION});
+    this._currentDeleteBtn = null;
     this.init();
   }
+
+  onCommentError() {
+    const ANIMATION_TIMEOUT = 6000;
+    this._filmDetails.getElement().querySelector(`.film-details__comment-input`)
+      .style.animation = `shake ${ANIMATION_TIMEOUT / 10000}s`;
+    setTimeout(() => {
+      this._filmDetails.getElement().querySelector(`.film-details__comment-input`).style.animation = ``;
+    }, ANIMATION_TIMEOUT);
+    this._filmDetails.getElement().querySelector(`.film-details__comment-input`).disabled = false;
+  }
+
+  onCommentDeleteError() {
+    this._currentDeleteBtn.disabled = false;
+    this._currentDeleteBtn.textContent = `Delete`;
+  }
+
   init() {
     // Код, который создаст экземпляры объектов и запустит процесс рендеринга (для карточки и попапа)
     const card = new Card(this._card);
     let filmDetails = new FilmDetails(this._card);
+    this._filmDetails = filmDetails;
 
     // Открытие попапа
     const openDetails = () => {
@@ -82,15 +100,27 @@ export class MovieController {
     });
 
     // Обработка кнопки delete
+    const blockComment = () => {
+      filmDetails.getElement().querySelector(`.film-details__comment-input`).disabled = true;
+    };
+
+    const blockDeleteBtn = (button) => {
+      button.disabled = true;
+      button.textContent = `Deleting…`;
+    };
+
     const onCommentDelete = (event) => {
       if (event.target.classList.contains(`film-details__comment-delete`)) {
         event.preventDefault();
-        this._onCommentsChange({action: `delete`, commentId: event.currentTarget.dataset.commentId});
+        this._currentDeleteBtn = event.target;
+        blockDeleteBtn(event.target);
+        this._onCommentsChange({action: `delete`, commentId: event.currentTarget.dataset.commentId, onError: this.onCommentDeleteError.bind(this)});
       }
     };
 
     // Обработчик клика по кнопкам карточки
     const controlClickHandler = (event) => {
+      blockComment();
       const element = event.target;
       const cardNew = this._card;
       if (element.className.includes(`film-card__controls-item`)) {
@@ -122,6 +152,7 @@ export class MovieController {
         const pressEnterHandler = (event) => {
           const commentInput = filmDetails.getElement().querySelector(`.film-details__comment-input`);
           if ((event.ctrlKey || event.metaKey) && event.key === `Enter` && commentInput.value !== ``) {
+            blockComment();
             this._onCommentsChange({
               action: `create`,
               comment: {
@@ -129,7 +160,8 @@ export class MovieController {
                 date: new Date(),
                 emotion: `sleeping`
               },
-              filmId: this._card.id
+              filmId: this._card.id,
+              onError: this.onCommentError.bind(this)
             });
           }
         };
@@ -153,5 +185,6 @@ export class MovieController {
       unrender(popup);
     }
   }
+
 }
 

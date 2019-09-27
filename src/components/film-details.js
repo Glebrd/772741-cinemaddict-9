@@ -5,9 +5,6 @@ import 'moment-duration-format';
 
 const checkActiveButton = (isActive) => isActive ? `checked` : ``;
 
-// const getGenreMarkup = (genre) =>
-//   `<span class="film-details__genre">${genre}</span>`;
-
 export class FilmDetails extends AbstractComponent {
   constructor({title, comments, genres, poster, age, originalTitle, rating, director, writers, actors, releaseDate, duration, country, description, isToWatch, isWatched, isFavorite}) {
     super();
@@ -84,7 +81,7 @@ export class FilmDetails extends AbstractComponent {
               <tr class="film-details__row">
                 <td class="film-details__term">Genres</td>
                 <td class="film-details__cell">
-                Временная заглушка
+                ${this._genres.map((genre) => `<span class="film-details__genre">${genre}</span>`).join(``)}
                 </td>
               </tr>
             </table>
