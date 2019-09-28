@@ -16,7 +16,7 @@ export class MovieController {
     this._currentDeleteButton = null;
     this.init();
   }
-
+  // Колбеки, используемые при обмене
   onCommentError() {
     const ANIMATION_TIMEOUT = 6000;
     this._filmDetails.getElement().querySelector(`.film-details__comment-input`)
@@ -70,8 +70,8 @@ export class MovieController {
     card.getElement().querySelector(`.film-card__title`)
       .addEventListener(`click`, onTitleClick);
     // Клик на коменты
-    const onCommentsClick = (evtent) => {
-      evtent.preventDefault();
+    const onCommentsClick = (event) => {
+      event.preventDefault();
       openDetails();
     };
     card.getElement().querySelector(`.film-card__comments`)
@@ -102,11 +102,11 @@ export class MovieController {
       });
     });
 
-    // Обработка кнопки delete
+    // Блокировка поля ввода комента
     const blockComment = () => {
       filmDetails.getElement().querySelector(`.film-details__comment-input`).disabled = true;
     };
-
+    // Блокировка кнопки удаления комента
     const blockDeleteButton = (button) => {
       button.disabled = true;
       button.textContent = `Deleting…`;
@@ -120,14 +120,25 @@ export class MovieController {
         this._onCommentsChange({action: `delete`, commentId: event.currentTarget.dataset.commentId, onError: this.onCommentDeleteError.bind(this)});
       }
     };
+    // Обработка проставления рейтинга
+    const blockFilmRating = () => {
+      const ratingInputs = filmDetails.getElement().querySelectorAll(`.film-details__user-rating-label`);
+      ratingInputs.forEach((element) => {
+        element.style.backgroundColor = `green`;
+      });
+      const ratingLabels = filmDetails.getElement().querySelectorAll(`.film-details__user-rating-input`);
+      ratingLabels.forEach((element) => {
+        element.disabled = true;
+      });
+    };
 
     const onChangeUserRating = (event) => {
+      blockFilmRating();
       this._onDataChange(Object.assign(this._card, {userRating: event.target.value || 0}));
     };
 
     // Обработчик клика по кнопкам карточки
     const controlClickHandler = (event) => {
-      blockComment();
       const element = event.target;
       const cardNew = this._card;
       if (element.className.includes(`film-card__controls-item`)) {
@@ -165,7 +176,7 @@ export class MovieController {
               comment: {
                 comment: commentInput.value,
                 date: new Date(),
-                emotion: `sleeping`
+                emotion: document.querySelector(`.film-details__add-emoji-label img`).alt
               },
               filmId: this._card.id,
               onError: this.onCommentError.bind(this)

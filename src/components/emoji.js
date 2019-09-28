@@ -7,6 +7,6 @@ export class Emoji extends AbstractComponent {
   }
 
   getTemplate() {
-    return `<img src="${this._path}" width="55" height="55" alt="emoji">`;
+    return `<img src="${this._path}" width="55" height="55" alt="${this._path.split(`emoji/`).pop().split(`.`)[0]}">`;
   }
 }
