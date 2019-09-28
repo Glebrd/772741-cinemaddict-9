@@ -123,7 +123,6 @@ export class MovieController {
 
     const onChangeUserRating = (event) => {
       this._onDataChange(Object.assign(this._card, {userRating: event.target.value || 0}));
-      // this.setView(`details`);
     };
 
     // Обработчик клика по кнопкам карточки
