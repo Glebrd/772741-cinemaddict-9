@@ -1,9 +1,9 @@
-import { Card } from '../components/card.js';
-import { FilmDetails } from '../components/film-details.js';
-import { render, unrender, AUTHORIZATION, END_POINT, onEscButtonPress } from '../util.js';
-import { Emoji } from '../components/emoji.js';
-import { Comment } from '../components/comment.js';
-import { API } from '../api.js';
+import {Card} from '../components/card.js';
+import {FilmDetails} from '../components/film-details.js';
+import {render, unrender, AUTHORIZATION, END_POINT, onEscButtonPress} from '../util.js';
+import {Emoji} from '../components/emoji.js';
+import {Comment} from '../components/comment.js';
+import {API} from '../api.js';
 const body = document.querySelector(`body`);
 export class MovieController {
   constructor(card, container, onDataChange, onChangeView, onCommentsChange) {
@@ -12,7 +12,7 @@ export class MovieController {
     this._onChangeView = onChangeView;
     this._onCommentsChange = onCommentsChange;
     this._container = container;
-    this._api = new API({ endPoint: END_POINT, authorization: AUTHORIZATION });
+    this._api = new API({endPoint: END_POINT, authorization: AUTHORIZATION});
     this._currentDeleteButton = null;
     this.init();
   }
@@ -117,7 +117,7 @@ export class MovieController {
         event.preventDefault();
         this._currentDeleteButton = event.target;
         blockDeleteButton(event.target);
-        this._onCommentsChange({ action: `delete`, commentId: event.currentTarget.dataset.commentId, onError: this.onCommentDeleteError.bind(this) });
+        this._onCommentsChange({action: `delete`, commentId: event.currentTarget.dataset.commentId, onError: this.onCommentDeleteError.bind(this)});
       }
     };
 
@@ -182,9 +182,6 @@ export class MovieController {
     // Проверяем, был ли попап открыт до создания данного экземпляра объекта.  Если да, то обновляем.
     if (document.querySelector(`.film-details__title`)) {
       if (document.querySelector(`.film-details__title`).innerHTML === this._card.title) {
-        // filmDetails = new FilmDetails(this._card);
-        // this._filmDetails = filmDetails;
-        console.log(this._card);
         openDetails();
       }
     }
