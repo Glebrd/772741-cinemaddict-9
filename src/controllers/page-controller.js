@@ -14,6 +14,7 @@ import {MovieController} from './movie-controller.js';
 import {SearchController} from './search-controller.js';
 import {StatisticController} from './statistic-controller.js';
 import {API} from '../api.js';
+
 const NUMBER_OF_CARDS_PER_PAGE = 5;
 const NUMBER_OF_TOP_RATED_FILMS = 2;
 const NUMBER_OF_MOST_COMMENTED_FILMS = 2;
@@ -153,6 +154,7 @@ export class PageController {
   }
 
   _onDataChange(newData) {
+    // console.log(newData.id);
     errorFlag = false;
     this._api.updateFilm({
       id: newData.id,
@@ -163,6 +165,7 @@ export class PageController {
         this._sortedCards = films;
         this._cards = films;
       }).then(() => {
+        // console.log(this._sortedCards);
         this._refreshPage();
       });
   }

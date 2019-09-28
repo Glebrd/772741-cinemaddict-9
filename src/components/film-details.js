@@ -6,7 +6,7 @@ import 'moment-duration-format';
 const checkActiveButton = (isActive) => isActive ? `checked` : ``;
 
 export class FilmDetails extends AbstractComponent {
-  constructor({title, comments, genres, poster, age, originalTitle, rating, director, writers, actors, releaseDate, duration, country, description, isToWatch, isWatched, isFavorite}) {
+  constructor({title, comments, genres, poster, age, originalTitle, rating, director, writers, actors, releaseDate, duration, country, description, isToWatch, isWatched, isFavorite, userRating}) {
     super();
     this._title = title;
     this._comments = comments;
@@ -15,6 +15,7 @@ export class FilmDetails extends AbstractComponent {
     this._age = age;
     this._originalTitle = originalTitle;
     this._rating = rating;
+    this._userRating = userRating;
     this._director = director;
     this._writers = writers;
     this._actors = actors;
@@ -103,7 +104,7 @@ export class FilmDetails extends AbstractComponent {
           <label for="favorite" class="film-details__control-label film-details__control-label--favorite" data-action-type="favorite">Add to favorites</label>
         </section>
       </div>
-      ${this._isWatched ? new FilmRating(this._poster, this._title).getTemplate() : ``}
+      ${this._isWatched ? new FilmRating(this._poster, this._title, this._userRating).getTemplate() : ``}
       <div class="form-details__bottom-container">
         <section class="film-details__comments-wrap">
           <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${this._comments.length}</span></h3>

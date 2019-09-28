@@ -1,9 +1,9 @@
-import {Card} from '../components/card.js';
-import {FilmDetails} from '../components/film-details.js';
-import {render, unrender, AUTHORIZATION, END_POINT, onEscButtonPress} from '../util.js';
-import {Emoji} from '../components/emoji.js';
-import {Comment} from '../components/comment.js';
-import {API} from '../api.js';
+import { Card } from '../components/card.js';
+import { FilmDetails } from '../components/film-details.js';
+import { render, unrender, AUTHORIZATION, END_POINT, onEscButtonPress } from '../util.js';
+import { Emoji } from '../components/emoji.js';
+import { Comment } from '../components/comment.js';
+import { API } from '../api.js';
 const body = document.querySelector(`body`);
 export class MovieController {
   constructor(card, container, onDataChange, onChangeView, onCommentsChange) {
@@ -12,7 +12,7 @@ export class MovieController {
     this._onChangeView = onChangeView;
     this._onCommentsChange = onCommentsChange;
     this._container = container;
-    this._api = new API({endPoint: END_POINT, authorization: AUTHORIZATION});
+    this._api = new API({ endPoint: END_POINT, authorization: AUTHORIZATION });
     this._currentDeleteButton = null;
     this.init();
   }
@@ -37,13 +37,18 @@ export class MovieController {
     const card = new Card(this._card);
     let filmDetails = new FilmDetails(this._card);
     this._filmDetails = filmDetails;
-
     // Открытие попапа
     const openDetails = () => {
       this._onChangeView();
       render(body, filmDetails.getElement());
       document.addEventListener(`keydown`, onDetailsEscPress);
       filmDetails.getElement().querySelector(`.film-details__controls`).addEventListener(`click`, controlClickHandler);
+      // Если фильм просомтрен, то вешаем обработчики на кнопки оценки и на сброс
+      if (this._card.isWatched) {
+        filmDetails.getElement().querySelectorAll(`.film-details__user-rating-input`).forEach((input) =>
+          input.addEventListener(`change`, onChangeUserRating));
+        filmDetails.getElement().querySelector(`.film-details__watched-reset`).addEventListener(`click`, onChangeUserRating);
+      }
     };
     // Закрытие попапа
     const closeDetails = () => {
@@ -112,8 +117,13 @@ export class MovieController {
         event.preventDefault();
         this._currentDeleteButton = event.target;
         blockDeleteButton(event.target);
-        this._onCommentsChange({action: `delete`, commentId: event.currentTarget.dataset.commentId, onError: this.onCommentDeleteError.bind(this)});
+        this._onCommentsChange({ action: `delete`, commentId: event.currentTarget.dataset.commentId, onError: this.onCommentDeleteError.bind(this) });
       }
+    };
+
+    const onChangeUserRating = (event) => {
+      this._onDataChange(Object.assign(this._card, {userRating: event.target.value || 0}));
+      // this.setView(`details`);
     };
 
     // Обработчик клика по кнопкам карточки
@@ -172,6 +182,9 @@ export class MovieController {
     // Проверяем, был ли попап открыт до создания данного экземпляра объекта.  Если да, то обновляем.
     if (document.querySelector(`.film-details__title`)) {
       if (document.querySelector(`.film-details__title`).innerHTML === this._card.title) {
+        // filmDetails = new FilmDetails(this._card);
+        // this._filmDetails = filmDetails;
+        console.log(this._card);
         openDetails();
       }
     }
