@@ -1,5 +1,10 @@
 import {ModelFilm} from './model-film';
 
+const NetworkConfig = {
+  AUTHORIZATION: `Basic ${Math.floor(Math.random() * 1000000000)}`,
+  END_POINT: `https://htmlacademy-es-9.appspot.com/cinemaddict`
+};
+
 const checkStatus = (response) => {
   if (response.status >= 200 && response.status < 300) {
     return response;
@@ -12,9 +17,9 @@ const toJSON = (response) => {
 };
 
 export class API {
-  constructor({endPoint, authorization}) {
-    this._endPoint = endPoint;
-    this._authorization = authorization;
+  constructor() {
+    this._endPoint = NetworkConfig.END_POINT;
+    this._authorization = NetworkConfig.AUTHORIZATION;
   }
 
   _load({url, method = `GET`, body = null, headers = new Headers()}) {

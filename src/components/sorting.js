@@ -10,7 +10,8 @@ const sortCardsByComments = (cards) => {
 };
 
 const sortCardsByDate = (cards) => {
-  return cards.slice().sort((a, b) => b.releaseDate - a.releaseDate);
+  console.log(cards.slice().sort((a, b) => b.releaseDate - a.releaseDate));
+  return cards.slice().sort((a, b) => new Date(b.releaseDate) - new Date(a.releaseDate));
 };
 
 export class Sorting extends AbstractComponent {

@@ -1,9 +1,10 @@
 import {Card} from '../components/card.js';
 import {FilmDetails} from '../components/film-details.js';
-import {render, unrender, AUTHORIZATION, END_POINT, onEscButtonPress} from '../util.js';
+import {render, unrender, onEscButtonPress} from '../util.js';
 import {Emoji} from '../components/emoji.js';
 import {Comment} from '../components/comment.js';
 import {API} from '../api.js';
+const ANIMATION_TIMEOUT = 6000;
 const body = document.querySelector(`body`);
 export class MovieController {
   constructor(card, container, onDataChange, onChangeView, onCommentsChange) {
@@ -12,24 +13,38 @@ export class MovieController {
     this._onChangeView = onChangeView;
     this._onCommentsChange = onCommentsChange;
     this._container = container;
-    this._api = new API({endPoint: END_POINT, authorization: AUTHORIZATION});
+    this._api = new API();
     this._currentDeleteButton = null;
     this.init();
   }
+
+  _getCommentInput() {
+    return this._filmDetails.getElement().querySelector(`.film-details__comment-input`);
+  }
+
   // Колбеки, используемые при обмене
   onCommentError() {
-    const ANIMATION_TIMEOUT = 6000;
-    this._filmDetails.getElement().querySelector(`.film-details__comment-input`)
-      .style.animation = `shake ${ANIMATION_TIMEOUT / 10000}s`;
+    this._getCommentInput().style.animation = `shake ${ANIMATION_TIMEOUT / 10000}s`;
     setTimeout(() => {
-      this._filmDetails.getElement().querySelector(`.film-details__comment-input`).style.animation = ``;
+      this._getCommentInput().style.animation = ``;
     }, ANIMATION_TIMEOUT);
-    this._filmDetails.getElement().querySelector(`.film-details__comment-input`).disabled = false;
+    this._getCommentInput().disabled = false;
   }
 
   onCommentDeleteError() {
     this._currentDeleteButton.disabled = false;
     this._currentDeleteButton.textContent = `Delete`;
+  }
+
+  onFilmRatingError() {
+    const ratingInputs = document.querySelectorAll(`.film-details__user-rating-label`);
+    ratingInputs.forEach((element) => {
+      element.style.backgroundColor = `green`;
+    });
+    const ratingLabels = document.getElement().querySelectorAll(`.film-details__user-rating-input`);
+    ratingLabels.forEach((element) => {
+      element.disabled = true;
+    });
   }
 
   init() {
@@ -103,7 +118,7 @@ export class MovieController {
     });
 
     // Блокировка поля ввода комента
-    const blockComment = () => {
+    const blockCommentInput = () => {
       filmDetails.getElement().querySelector(`.film-details__comment-input`).disabled = true;
     };
     // Блокировка кнопки удаления комента
@@ -134,7 +149,7 @@ export class MovieController {
 
     const onChangeUserRating = (event) => {
       blockFilmRating();
-      this._onDataChange(Object.assign(this._card, {userRating: event.target.value || 0}));
+      this._onDataChange(Object.assign(this._card, {userRating: event.target.value || 0}), this.onFilmRatingError.bind(this));
     };
 
     // Обработчик клика по кнопкам карточки
@@ -170,7 +185,7 @@ export class MovieController {
         const pressEnterHandler = (event) => {
           const commentInput = filmDetails.getElement().querySelector(`.film-details__comment-input`);
           if ((event.ctrlKey || event.metaKey) && event.key === `Enter` && commentInput.value !== ``) {
-            blockComment();
+            blockCommentInput();
             this._onCommentsChange({
               action: `create`,
               comment: {
