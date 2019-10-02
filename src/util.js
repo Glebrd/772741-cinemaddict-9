@@ -50,3 +50,5 @@ export const onEscButtonPress = (event, action) => {
     action();
   }
 };
+
+export const createArrayFromObject = (object) => Object.keys(object).map((id) => object[id]);
