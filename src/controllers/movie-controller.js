@@ -45,10 +45,14 @@ export class MovieController {
     });
   }
 
+  _isOnline() {
+    return window.navigator.onLine;
+  }
+
   init() {
     // Код, который создаст экземпляры объектов и запустит процесс рендеринга (для карточки и попапа)
     const card = new Card(this._card);
-    let filmDetails = new FilmDetails(this._card);
+    let filmDetails = new FilmDetails(this._card, this._isOnline());
     this._filmDetails = filmDetails;
     // Открытие попапа
     const openDetails = () => {

@@ -17,13 +17,14 @@ import {API} from '../api.js';
 import {Store} from '../store';
 import {Provider} from '../provider';
 
+const MINIMAL_QUERY_LENGTH = 3;
+const FILMS_STORE_KEY = `films-store-key`;
+
 const PageConfig = {
   NUMBER_OF_CARDS_PER_PAGE: 5,
   NUMBER_OF_TOP_RATED_FILMS: 2,
   NUMBER_OF_MOST_COMMENTED_FILMS: 2,
 };
-const MINIMAL_QUERY_LENGTH = 3;
-const FILMS_STORE_KEY = `films-store-key`;
 
 export class PageController {
   constructor(container) {

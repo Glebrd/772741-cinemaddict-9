@@ -1,4 +1,5 @@
 import {ModelFilm} from './model-film';
+import {createArrayFromObject} from './util.js';
 
 export class Provider {
   constructor({api, store}) {
@@ -16,7 +17,7 @@ export class Provider {
           return films;
         });
     } else {
-      const rawFilms = Object.entries(this._store.getAll());
+      const rawFilms = createArrayFromObject(this._store.getAll());
       const films = ModelFilm.parseFilms(rawFilms);
       return Promise.resolve(films);
     }
@@ -39,7 +40,7 @@ export class Provider {
     if (this._isOnline()) {
       return this._api.getComments({filmId})
         .then((comments) => {
-          const rawFilms = Object.entries(this._store.getAll());
+          const rawFilms = createArrayFromObject(this._store.getAll());
           const filmDataWithComments = Object.assign({}, rawFilms[filmId], {comments});
           this._store.setItem({key: filmId, item: filmDataWithComments});
           return comments;
@@ -54,7 +55,7 @@ export class Provider {
       return this._api.createComment({comment, filmId})
         .then((response) => {
           const {movie, comments} = response;
-          const rawFilms = Object.entries(this._store.getAll());
+          const rawFilms = createArrayFromObject(this._store.getAll());
           const filmDataWithComments = Object.assign({}, rawFilms[movie.id], {comments});
 
           this._store.setItem({key: filmId, item: filmDataWithComments});
@@ -69,7 +70,7 @@ export class Provider {
     if (this._isOnline()) {
       return this._api.deleteComment({commentId})
         .then(() => {
-          const rawFilms = Object.entries(this._store.getAll());
+          const rawFilms = createArrayFromObject(this._store.getAll());
           const index = rawFilms[filmId].comments.findIndex((comment) => comment.id === commentId);
           const commentsWithoutDeleted = rawFilms[filmId].comments.splice(rawFilms[filmId].comments[index], 1);
           const filmDataWithComments = Object.assign({}, rawFilms[filmId], {comments: commentsWithoutDeleted});
@@ -82,7 +83,7 @@ export class Provider {
   }
 
   syncFilms() {
-    return this._api.syncFilms({films: Object.entries(this._store.getAll())});
+    return this._api.syncFilms({films: createArrayFromObject(this._store.getAll())});
   }
 
   _isOnline() {
