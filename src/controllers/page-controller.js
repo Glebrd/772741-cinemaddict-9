@@ -1,12 +1,12 @@
 import {Search} from '../components/search.js';
-import {UserRating} from '../components/user-rating.js';
 import {Sorting} from '../components/sorting.js';
 import {Menu} from '../components/menu.js';
 import {Films} from '../components/films.js';
+import {UserRating} from '../components/user-rating.js';
 import {FilmsAll} from '../components/films-all.js';
-import {FilmsMostCommented} from '../components/films-most-commented.js';
 import {FilmsTopRated} from '../components/films-top-rated.js';
 import {EmptyFilms} from '../components/empty-films.js';
+import {FilmsMostCommented} from '../components/films-most-commented.js';
 import {FooterStatistic} from '../components/footer-statistic';
 import {render, unrender} from '../util.js';
 import {ShowMoreButton} from '../components/show-more-button.js';
@@ -14,18 +14,24 @@ import {MovieController} from './movie-controller.js';
 import {SearchController} from './search-controller.js';
 import {StatisticController} from './statistic-controller.js';
 import {API} from '../api.js';
+import {Store} from '../store';
+import {Provider} from '../provider';
 
 const PageConfig = {
   NUMBER_OF_CARDS_PER_PAGE: 5,
   NUMBER_OF_TOP_RATED_FILMS: 2,
   NUMBER_OF_MOST_COMMENTED_FILMS: 2,
 };
-
 const MINIMAL_QUERY_LENGTH = 3;
+const FILMS_STORE_KEY = `films-store-key`;
 
 export class PageController {
   constructor(container) {
-    this._api = new API();
+    this._store = new Store({key: FILMS_STORE_KEY, storage: window.localStorage});
+    this._provider = new Provider({
+      api: new API(),
+      store: this._store,
+    });
     this._container = container;
     this._cards = [];
     this._sortedCards = [];
@@ -165,16 +171,18 @@ export class PageController {
   }
 
   _onDataChange(newData, onError = null) {
-    this._api.updateFilm({
+    this._provider.updateFilm({
       id: newData.id,
       data: newData.toRAW()
     })
-      .then(() => this._api.getFilms())
+      .then(() => this._provider.getFilms())
       .then((films) => {
         this._sortedCards = films;
       })
       .catch(() => {
-        onError();
+        if (onError !== null) {
+          onError();
+        }
       })
       .then(() => {
         this._refreshPage(onError);
@@ -182,12 +190,15 @@ export class PageController {
   }
   _onCommentsChange({action, comment = null, filmId = null, commentId = null, onError = null}) {
     switch (action) {
+      case `get`:
+        this._provider.getComments({filmId});
+        break;
       case `create`:
-        this._api.createComment({
+        this._provider.createComment({
           comment,
           filmId,
         })
-          .then(() => this._api.getFilms())
+        .then(() => this._provider.getFilms())
           .then((films) => {
             this._sortedCards = films;
           })
@@ -199,10 +210,10 @@ export class PageController {
           });
         break;
       case `delete`:
-        this._api.deleteComment({
+        this._provider.deleteComment({
           commentId
         })
-          .then(() => this._api.getFilms())
+        .then(() => this._provider.getFilms())
           .then((films) => {
             // this._cards = films;
             this._sortedCards = films;
@@ -211,7 +222,7 @@ export class PageController {
             onError();
           })
           .then(() => {
-            this._refreshPage(onError);
+            this._refreshPage();
           });
         break;
     }
@@ -278,8 +289,26 @@ export class PageController {
     this._renderAllCards();
   }
 
+
+  _onOfflineState() {
+    document.title = `${document.title}[OFFLINE]`;
+  }
+
+  _onOnlineState() {
+    document.title = document.title.split(`[OFFLINE]`)[0];
+    if (!this.provider) {
+      return;
+    } else {
+      this._provider = new Provider({
+        api: new API(),
+        store: this._store,
+      });
+    }
+    this._provider.syncFilms();
+  }
+
   init() {
-    this._api.getFilms()
+    this._provider.getFilms()
       .then((films) => {
         this._cards = films;
         this._sortedCards = films;
@@ -327,5 +356,7 @@ export class PageController {
           }
         });
       });
+    window.addEventListener(`offline`, this._onOfflineState);
+    window.addEventListener(`online`, this._onOnlineState);
   }
 }

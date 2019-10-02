@@ -1,5 +1,7 @@
 import {AbstractComponent} from './abstract-component.js';
 import moment from 'moment';
+import DOMPurify from 'dompurify';
+
 export class Comment extends AbstractComponent {
   constructor(comment) {
     super();
@@ -16,7 +18,7 @@ export class Comment extends AbstractComponent {
     <img src="./images/emoji/${this._emoji}.png" width="55" height="55" alt="emoji">
   </span>
   <div>
-    <p class="film-details__comment-text">${this._text}</p>
+    <p class="film-details__comment-text">${DOMPurify.sanitize(this._text)}</p>
     <p class="film-details__comment-info">
       <span class="film-details__comment-author">${this._author}</span>
       <span class="film-details__comment-day">${moment(this._date).format(`YY/MM/DD hh:mm`)}</span>

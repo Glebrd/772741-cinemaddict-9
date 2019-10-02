@@ -3,8 +3,8 @@ import moment from 'moment';
 export class ModelFilm {
   constructor(data) {
     this.id = data[`id`] || null;
-    this.poster = `./${data[`film_info`][`poster`]}` || ``;
     this.title = data[`film_info`][`title`] || ``;
+    this.poster = data[`film_info`][`poster`] || ``;
     this.originalTitle = data[`film_info`][`alternative_title`] || ``;
     this.description = data[`film_info`][`description`] || ``;
     this.duration = data[`film_info`][`runtime`] || null;

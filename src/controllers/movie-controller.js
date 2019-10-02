@@ -1,9 +1,9 @@
-import {Card} from '../components/card.js';
-import {FilmDetails} from '../components/film-details.js';
-import {render, unrender, onEscButtonPress} from '../util.js';
-import {Emoji} from '../components/emoji.js';
-import {Comment} from '../components/comment.js';
-import {API} from '../api.js';
+import { Card } from '../components/card.js';
+import { FilmDetails } from '../components/film-details.js';
+import { render, unrender, onEscButtonPress } from '../util.js';
+import { Emoji } from '../components/emoji.js';
+import { Comment } from '../components/comment.js';
+import { API } from '../api.js';
 const ANIMATION_TIMEOUT = 6000;
 const body = document.querySelector(`body`);
 export class MovieController {
@@ -132,7 +132,7 @@ export class MovieController {
         event.preventDefault();
         this._currentDeleteButton = event.target;
         blockDeleteButton(event.target);
-        this._onCommentsChange({action: `delete`, commentId: event.currentTarget.dataset.commentId, onError: this.onCommentDeleteError.bind(this)});
+        this._onCommentsChange({ action: `delete`, commentId: event.currentTarget.dataset.commentId, onError: this.onCommentDeleteError.bind(this) });
       }
     };
     // Обработка проставления рейтинга
@@ -149,7 +149,7 @@ export class MovieController {
 
     const onChangeUserRating = (event) => {
       blockFilmRating();
-      this._onDataChange(Object.assign(this._card, {userRating: event.target.value || 0}), this.onFilmRatingError.bind(this));
+      this._onDataChange(Object.assign(this._card, { userRating: event.target.value || 0 }), this.onFilmRatingError.bind(this));
     };
 
     // Обработчик клика по кнопкам карточки
@@ -179,30 +179,33 @@ export class MovieController {
 
     // Добавление коментариев
     const commentaries = filmDetails.getElement().querySelector(`.film-details__comments-list`);
-    this._api.getComments(this._card.id)
+    // this._api.getComments(this._card.id)
+    this._onCommentsChange({ action: `get`, filmId: this._card.id })
       .then((comments) => {
-        comments.forEach((commentary) => render(commentaries, new Comment(commentary).getElement()));
-        const pressEnterHandler = (event) => {
-          const commentInput = filmDetails.getElement().querySelector(`.film-details__comment-input`);
-          if ((event.ctrlKey || event.metaKey) && event.key === `Enter` && commentInput.value !== ``) {
-            blockCommentInput();
-            this._onCommentsChange({
-              action: `create`,
-              comment: {
-                comment: commentInput.value,
-                date: new Date(),
-                emotion: document.querySelector(`.film-details__add-emoji-label img`).alt
-              },
-              filmId: this._card.id,
-              onError: this.onCommentError.bind(this)
-            });
-          }
-        };
-        filmDetails.getElement().querySelector(`.film-details__comment-input`).addEventListener(`keydown`, pressEnterHandler);
-        // Добавим обработчик кнопки delete в коментах
-        filmDetails.getElement().querySelectorAll(`.film-details__comment`).forEach((button) => {
-          button.addEventListener(`click`, onCommentDelete);
-        });
+        if (comments) {
+          comments.forEach((commentary) => render(commentaries, new Comment(commentary).getElement()));
+          const pressEnterHandler = (event) => {
+            const commentInput = filmDetails.getElement().querySelector(`.film-details__comment-input`);
+            if ((event.ctrlKey || event.metaKey) && event.key === `Enter` && commentInput.value !== ``) {
+              blockCommentInput();
+              this._onCommentsChange({
+                action: `create`,
+                comment: {
+                  comment: commentInput.value,
+                  date: new Date(),
+                  emotion: document.querySelector(`.film-details__add-emoji-label img`).alt
+                },
+                filmId: this._card.id,
+                onError: this.onCommentError.bind(this)
+              });
+            }
+          };
+          filmDetails.getElement().querySelector(`.film-details__comment-input`).addEventListener(`keydown`, pressEnterHandler);
+          // Добавим обработчик кнопки delete в коментах
+          filmDetails.getElement().querySelectorAll(`.film-details__comment`).forEach((button) => {
+            button.addEventListener(`click`, onCommentDelete);
+          });
+        }
       });
     // Проверяем, был ли попап открыт до создания данного экземпляра объекта.  Если да, то обновляем.
     if (document.querySelector(`.film-details__title`)) {
