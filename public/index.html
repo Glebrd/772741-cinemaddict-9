@@ -30,10 +30,16 @@
 
 <footer class="footer">
   <section class="footer__logo logo logo--smaller">Cinemaddict</section>
-  <section class="footer__statistics">
-    <p>130 291 movies inside</p>
-  </section>
 </footer>
 <script src="./bundle.js"></script>
+<script>
+  navigator.serviceWorker.register(`./sw.js`)
+    .then(function(reg) {
+      console.log(`Registration succeeded. Scope is ${reg.scope}`);
+    })
+    .catch(function(error) {
+      console.log(`Registration failed with ${error}`);
+    });
+</script>
 </body>
 </html>

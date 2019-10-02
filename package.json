@@ -18,5 +18,13 @@
   },
   "engines": {
     "node": "10"
+  },
+  "dependencies": {
+    "chart": "0.1.2",
+    "chart.js": "2.8.0",
+    "chartjs-plugin-datalabels": "0.7.0",
+    "dompurify": "2.0.3",
+    "moment": "2.24.0",
+    "moment-duration-format": "2.3.2"
   }
 }
