@@ -1,5 +1,5 @@
-import {Search} from '../components/search.js';
 import {Sorting} from '../components/sorting.js';
+import {Search} from '../components/search.js';
 import {Menu} from '../components/menu.js';
 import {Films} from '../components/films.js';
 import {UserRating} from '../components/user-rating.js';
@@ -190,20 +190,19 @@ export class PageController {
   }
   _onCommentsChange({action, comment = null, filmId = null, commentId = null, onError = null}) {
     switch (action) {
-      case `get`:
-        this._provider.getComments({filmId});
-        break;
       case `create`:
         this._provider.createComment({
           comment,
           filmId,
         })
-        .then(() => this._provider.getFilms())
+          .then(() => this._provider.getFilms())
           .then((films) => {
             this._sortedCards = films;
           })
           .catch(() => {
-            onError();
+            if (onError !== null) {
+              onError();
+            }
           })
           .then(() => {
             this._refreshPage(onError);
@@ -213,19 +212,21 @@ export class PageController {
         this._provider.deleteComment({
           commentId
         })
-        .then(() => this._provider.getFilms())
+          .then(() => this._provider.getFilms())
           .then((films) => {
-            // this._cards = films;
             this._sortedCards = films;
           })
           .catch(() => {
-            onError();
+            if (onError !== null) {
+              onError();
+            }
           })
           .then(() => {
             this._refreshPage();
           });
         break;
     }
+    return this._provider.getComments({filmId});
   }
 
   _onChangeView() {
@@ -284,7 +285,6 @@ export class PageController {
     const header = document.querySelector(`.header`);
     render(header, this._search.getElement());
     render(header, this._userRating.getElement());
-    // render(this._container, this._menu.getElement());
     render(this._container, this._sorting.getElement());
     this._renderAllCards();
   }
@@ -316,7 +316,6 @@ export class PageController {
         this._filtersCount = Menu.getFiltersCount(this._sortedCards);
         this._userRank = UserRating.getUserRank(this._filtersCount[this._filtersCount.findIndex((element) => element.title === `History`)].count);
         this._userRating = new UserRating(this._userRank);
-        // this._menu = new Menu(this._filtersCount);
         this._renderPage();
         // Поиск
         const searchInput = document.querySelector(`.search__field`);

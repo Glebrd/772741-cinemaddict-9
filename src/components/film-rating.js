@@ -1,5 +1,6 @@
 import {AbstractComponent} from './abstract-component.js';
 
+const MAXIMUM_POINTS_AMOUNT = 9;
 export class FilmRating extends AbstractComponent {
   constructor(poster, title, userRating) {
     super();
@@ -9,7 +10,7 @@ export class FilmRating extends AbstractComponent {
   }
 
   _getUserRating() {
-    return [...Array(9)].map((element, i) => {
+    return [...Array(MAXIMUM_POINTS_AMOUNT)].map((element, i) => {
       const value = i + 1;
       return `
       <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="${value}"

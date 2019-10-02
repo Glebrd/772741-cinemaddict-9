@@ -1,9 +1,10 @@
-import { Card } from '../components/card.js';
-import { FilmDetails } from '../components/film-details.js';
-import { render, unrender, onEscButtonPress } from '../util.js';
-import { Emoji } from '../components/emoji.js';
-import { Comment } from '../components/comment.js';
-import { API } from '../api.js';
+import {Card} from '../components/card.js';
+import {FilmDetails} from '../components/film-details.js';
+import {render, unrender, onEscButtonPress} from '../util.js';
+import {Emoji} from '../components/emoji.js';
+import {Comment} from '../components/comment.js';
+import {API} from '../api.js';
+
 const ANIMATION_TIMEOUT = 6000;
 const body = document.querySelector(`body`);
 export class MovieController {
@@ -18,17 +19,14 @@ export class MovieController {
     this.init();
   }
 
-  _getCommentInput() {
-    return this._filmDetails.getElement().querySelector(`.film-details__comment-input`);
-  }
-
   // Колбеки, используемые при обмене
   onCommentError() {
-    this._getCommentInput().style.animation = `shake ${ANIMATION_TIMEOUT / 10000}s`;
+    const commentInput = this._filmDetails.getElement().querySelector(`.film-details__comment-input`);
+    commentInput.style.animation = `shake ${ANIMATION_TIMEOUT / 10000}s`;
     setTimeout(() => {
-      this._getCommentInput().style.animation = ``;
+      commentInput.style.animation = ``;
     }, ANIMATION_TIMEOUT);
-    this._getCommentInput().disabled = false;
+    commentInput.disabled = false;
   }
 
   onCommentDeleteError() {
@@ -132,7 +130,7 @@ export class MovieController {
         event.preventDefault();
         this._currentDeleteButton = event.target;
         blockDeleteButton(event.target);
-        this._onCommentsChange({ action: `delete`, commentId: event.currentTarget.dataset.commentId, onError: this.onCommentDeleteError.bind(this) });
+        this._onCommentsChange({action: `delete`, commentId: event.currentTarget.dataset.commentId, onError: this.onCommentDeleteError.bind(this)});
       }
     };
     // Обработка проставления рейтинга
@@ -149,7 +147,7 @@ export class MovieController {
 
     const onChangeUserRating = (event) => {
       blockFilmRating();
-      this._onDataChange(Object.assign(this._card, { userRating: event.target.value || 0 }), this.onFilmRatingError.bind(this));
+      this._onDataChange(Object.assign(this._card, {userRating: event.target.value || 0}), this.onFilmRatingError.bind(this));
     };
 
     // Обработчик клика по кнопкам карточки
@@ -179,8 +177,7 @@ export class MovieController {
 
     // Добавление коментариев
     const commentaries = filmDetails.getElement().querySelector(`.film-details__comments-list`);
-    // this._api.getComments(this._card.id)
-    this._onCommentsChange({ action: `get`, filmId: this._card.id })
+    this._onCommentsChange({action: `get`, filmId: this._card.id})
       .then((comments) => {
         if (comments) {
           comments.forEach((commentary) => render(commentaries, new Comment(commentary).getElement()));
