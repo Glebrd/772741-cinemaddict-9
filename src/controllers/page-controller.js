@@ -282,7 +282,7 @@ export class PageController {
   }
 
   _renderPage() {
-    // Запускаем процесс рендеринга
+    // Запускаем процесс рендеринга.
     const header = document.querySelector(`.header`);
     render(header, this._search.getElement());
     render(header, this._userRating.getElement());
