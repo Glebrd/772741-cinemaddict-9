@@ -1,7 +1,7 @@
-import {AbstractComponent} from './abstract-component.js';
+import AbstractComponent from './abstract-component.js';
 
 const MAXIMUM_POINTS_AMOUNT = 9;
-export class FilmRating extends AbstractComponent {
+class FilmRating extends AbstractComponent {
   constructor(poster, title, userRating) {
     super();
     this._poster = poster;
@@ -47,3 +47,5 @@ export class FilmRating extends AbstractComponent {
     `;
   }
 }
+
+export default FilmRating;

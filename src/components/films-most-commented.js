@@ -1,5 +1,5 @@
-import {AbstractComponent} from './abstract-component';
-export class FilmsMostCommented extends AbstractComponent {
+import AbstractComponent from './abstract-component';
+class FilmsMostCommented extends AbstractComponent {
   getTemplate() {
     return `<section class="films-list--extra">
           <h2 class="films-list__title">Most commented</h2>
@@ -8,3 +8,5 @@ export class FilmsMostCommented extends AbstractComponent {
         </section>`;
   }
 }
+
+export default FilmsMostCommented;

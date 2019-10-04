@@ -1,5 +1,5 @@
-import {AbstractComponent} from './abstract-component';
-export class UserRating extends AbstractComponent {
+import AbstractComponent from './abstract-component';
+class UserRating extends AbstractComponent {
   constructor(userRating) {
     super();
     this._userRating = userRating;
@@ -24,3 +24,5 @@ export class UserRating extends AbstractComponent {
   }
 
 }
+
+export default UserRating;

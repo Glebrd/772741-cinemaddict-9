@@ -1,21 +1,21 @@
-import {Sorting} from '../components/sorting.js';
-import {Search} from '../components/search.js';
-import {Menu} from '../components/menu.js';
-import {Films} from '../components/films.js';
-import {UserRating} from '../components/user-rating.js';
-import {FilmsAll} from '../components/films-all.js';
-import {FilmsTopRated} from '../components/films-top-rated.js';
-import {EmptyFilms} from '../components/empty-films.js';
-import {FilmsMostCommented} from '../components/films-most-commented.js';
-import {FooterStatistic} from '../components/footer-statistic';
+import Sorting from '../components/sorting.js';
+import Search from '../components/search.js';
+import Menu from '../components/menu.js';
+import Films from '../components/films.js';
+import UserRating from '../components/user-rating.js';
+import FilmsAll from '../components/films-all.js';
+import FilmsTopRated from '../components/films-top-rated.js';
+import EmptyFilms from '../components/empty-films.js';
+import FilmsMostCommented from '../components/films-most-commented.js';
+import FooterStatistic from '../components/footer-statistic';
 import {render, unrender} from '../util.js';
-import {ShowMoreButton} from '../components/show-more-button.js';
-import {MovieController} from './movie-controller.js';
-import {SearchController} from './search-controller.js';
-import {StatisticController} from './statistic-controller.js';
-import {API} from '../api.js';
-import {Store} from '../store';
-import {Provider} from '../provider';
+import ShowMoreButton from '../components/show-more-button.js';
+import MovieController from './movie-controller.js';
+import SearchController from './search-controller.js';
+import StatisticController from './statistic-controller.js';
+import API from '../api.js';
+import Store from '../store';
+import Provider from '../provider';
 
 const MINIMAL_QUERY_LENGTH = 3;
 const FILMS_STORE_KEY = `films-store-key`;
@@ -26,7 +26,7 @@ const PageConfig = {
   NUMBER_OF_MOST_COMMENTED_FILMS: 2,
 };
 
-export class PageController {
+class PageController {
   constructor(container) {
     this._store = new Store({key: FILMS_STORE_KEY, storage: window.localStorage});
     this._provider = new Provider({
@@ -282,7 +282,7 @@ export class PageController {
   }
 
   _renderPage() {
-    // Запускаем процесс рендеринга
+    // Запускаем процесс рендеринга.
     const header = document.querySelector(`.header`);
     render(header, this._search.getElement());
     render(header, this._userRating.getElement());
@@ -360,3 +360,5 @@ export class PageController {
     window.addEventListener(`online`, this._onOnlineState);
   }
 }
+
+export default PageController;

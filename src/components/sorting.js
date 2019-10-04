@@ -1,4 +1,4 @@
-import {AbstractComponent} from './abstract-component';
+import AbstractComponent from './abstract-component';
 
 
 const sortCardsByRating = (cards) => {
@@ -13,7 +13,7 @@ const sortCardsByDate = (cards) => {
   return cards.slice().sort((a, b) => new Date(b.releaseDate) - new Date(a.releaseDate));
 };
 
-export class Sorting extends AbstractComponent {
+class Sorting extends AbstractComponent {
   getTemplate() {
     return `<ul class="sort">
     <li><a href="#" data-sort-type="default" class="sort__button sort__button--active">Sort by default</a></li>
@@ -36,4 +36,4 @@ export class Sorting extends AbstractComponent {
   }
 }
 
-
+export default Sorting;

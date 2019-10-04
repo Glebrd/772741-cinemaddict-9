@@ -1,5 +1,5 @@
 import {unrender, createElement} from "../util";
-export class AbstractComponent {
+class AbstractComponent {
   constructor() {
     if (new.target === AbstractComponent) {
       throw new Error(`Can't instantiate AbstractComponent, only concrete one.`);
@@ -24,3 +24,5 @@ export class AbstractComponent {
     this._element = null;
   }
 }
+
+export default AbstractComponent;
