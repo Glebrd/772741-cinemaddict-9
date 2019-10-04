@@ -31,7 +31,7 @@ class Menu extends AbstractComponent {
     </nav>`;
   }
 
-  // Расчёт для фильтров
+  // Расчёт для фильтров.
   static getFiltersCount(cards) {
 
     let isToWatch = 0;
