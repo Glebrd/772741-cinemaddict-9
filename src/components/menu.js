@@ -1,5 +1,5 @@
 import {createElementsFromTemplateAndData} from "../util";
-import {AbstractComponent} from './abstract-component';
+import AbstractComponent from './abstract-component';
 
 const filterCardsByWatchlist = (cards) => {
   return cards.filter((card) => card.isToWatch);
@@ -13,7 +13,7 @@ const filterCardsByFavorites = (cards) => {
   return cards.filter((card) => card.isFavorite);
 };
 
-export class Menu extends AbstractComponent {
+class Menu extends AbstractComponent {
   constructor(filters) {
     super();
     this._filters = filters;
@@ -63,3 +63,5 @@ export class Menu extends AbstractComponent {
     return cards;
   }
 }
+
+export default Menu;

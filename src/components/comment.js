@@ -1,8 +1,8 @@
-import {AbstractComponent} from './abstract-component.js';
+import AbstractComponent from './abstract-component.js';
 import moment from 'moment';
 import DOMPurify from 'dompurify';
 
-export class Comment extends AbstractComponent {
+class Comment extends AbstractComponent {
   constructor(comment) {
     super();
     this._id = comment.id;
@@ -45,3 +45,5 @@ export class Comment extends AbstractComponent {
   </li>`;
   }
 }
+
+export default Comment;

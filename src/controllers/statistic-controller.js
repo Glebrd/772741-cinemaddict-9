@@ -1,11 +1,37 @@
-import {Statistic} from '../components/statistic';
+import Statistic from '../components/statistic';
 import {unrender, render} from '../util';
-import {Menu} from '../components/menu';
+import Menu from '../components/menu';
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import moment from 'moment';
 
-export class StatisticController {
+const StatisticBar = {
+  data: {
+    backgroundColor: `#ffe800`,
+    hoverBackgroundColor: `#ffe800`,
+    anchor: `start`,
+  },
+  options: {
+    datalabel: {
+      fontSize: 25,
+      color: `#ffffff`,
+      anchor: `start`,
+      align: `start`,
+      offset: 40,
+    },
+    animationEasing: `easeInOutQuad`,
+    yAxes: {
+      barThickness: 20,
+      ticks: {
+        fontColor: `#ffffff`,
+        padding: 100,
+        fontSize: 25,
+      },
+    }
+  }
+};
+
+class StatisticController {
   constructor(container) {
     this._container = container;
     this._statistic = null;
@@ -117,32 +143,6 @@ export class StatisticController {
   _getChart() {
     const labels = Object.keys(this._allGenres);
 
-    const StatisticBar = {
-      data: {
-        backgroundColor: `#ffe800`,
-        hoverBackgroundColor: `#ffe800`,
-        anchor: `start`,
-      },
-      options: {
-        datalabel: {
-          fontSize: 25,
-          color: `#ffffff`,
-          anchor: `start`,
-          align: `start`,
-          offset: 40,
-        },
-        animationEasing: `easeInOutQuad`,
-        yAxes: {
-          barThickness: 20,
-          ticks: {
-            fontColor: `#ffffff`,
-            padding: 100,
-            fontSize: 25,
-          },
-        }
-      }
-    };
-
     const barData = {
       labels,
       datasets: [
@@ -196,3 +196,4 @@ export class StatisticController {
   }
 }
 
+export default StatisticController;

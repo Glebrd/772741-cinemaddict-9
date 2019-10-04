@@ -1,13 +1,13 @@
-import {Card} from '../components/card.js';
-import {FilmDetails} from '../components/film-details.js';
+import Card from '../components/card.js';
+import FilmDetails from '../components/film-details.js';
 import {render, unrender, onEscButtonPress} from '../util.js';
-import {Emoji} from '../components/emoji.js';
-import {Comment} from '../components/comment.js';
-import {API} from '../api.js';
+import Emoji from '../components/emoji.js';
+import Comment from '../components/comment.js';
+import API from '../api.js';
 
 const ANIMATION_TIMEOUT = 6000;
 const body = document.querySelector(`body`);
-export class MovieController {
+class MovieController {
   constructor(card, container, onDataChange, onChangeView, onCommentsChange) {
     this._card = card;
     this._onDataChange = onDataChange;
@@ -225,3 +225,4 @@ export class MovieController {
 
 }
 
+export default MovieController;

@@ -1,8 +1,8 @@
 import {render} from '../util.js';
-import {EmptySearch} from '../components/empty-search.js';
-import {ResultOfSearch} from '../components/result-of-search.js';
+import EmptySearch from '../components/empty-search.js';
+import ResultOfSearch from '../components/result-of-search.js';
 
-export class SearchController {
+class SearchController {
   constructor(searchPhrase, cards) {
     this._cards = cards;
     this._searchPhrase = searchPhrase;
@@ -38,3 +38,5 @@ export class SearchController {
     document.querySelector(`.films-list__container`).innerHTML = ``;
   }
 }
+
+export default SearchController;

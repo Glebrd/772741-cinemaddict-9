@@ -1,11 +1,11 @@
-import {AbstractComponent} from './abstract-component.js';
-import {FilmRating} from './film-rating.js';
+import AbstractComponent from './abstract-component.js';
+import FilmRating from './film-rating.js';
 import moment from 'moment';
 import 'moment-duration-format';
 
 const checkActiveButton = (isActive) => isActive ? `checked` : ``;
 
-export class FilmDetails extends AbstractComponent {
+class FilmDetails extends AbstractComponent {
   constructor({title, comments, genres, poster, age, originalTitle, rating, director, writers, actors, releaseDate, duration, country, description, isToWatch, isWatched, isFavorite, userRating}, isOnline) {
     super();
     this._title = title;
@@ -148,3 +148,5 @@ export class FilmDetails extends AbstractComponent {
   </section>`;
   }
 }
+
+export default FilmDetails;

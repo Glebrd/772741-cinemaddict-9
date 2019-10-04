@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-export class ModelFilm {
+class ModelFilm {
   constructor(data) {
     this.id = data[`id`] || null;
     this.title = data[`film_info`][`title`] || ``;
@@ -63,3 +63,4 @@ export class ModelFilm {
   }
 }
 
+export default ModelFilm;

@@ -1,6 +1,8 @@
-import {AbstractComponent} from './abstract-component';
-export class Films extends AbstractComponent {
+import AbstractComponent from './abstract-component';
+class Films extends AbstractComponent {
   getTemplate() {
     return `<section class="films"></section>`;
   }
 }
+
+export default Films;

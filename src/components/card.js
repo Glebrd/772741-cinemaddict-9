@@ -1,10 +1,10 @@
 
-import {AbstractComponent} from './abstract-component';
+import AbstractComponent from './abstract-component';
 import moment from 'moment';
 import 'moment-duration-format';
 
 const checkActiveButton = (isActive) => isActive ? `film-card__controls-item--active` : ``;
-export class Card extends AbstractComponent {
+class Card extends AbstractComponent {
   constructor({description, rating, poster, releaseDate, duration, genres, title, comments, isToWatch, isWatched, isFavorite}) {
     super();
     this._description = description;
@@ -40,3 +40,5 @@ export class Card extends AbstractComponent {
     </article>`;
   }
 }
+
+export default Card;

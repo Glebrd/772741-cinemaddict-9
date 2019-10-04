@@ -1,4 +1,4 @@
-import {ModelFilm} from './model-film';
+import ModelFilm from './model-film';
 
 const NetworkConfig = {
   AUTHORIZATION: `Basic ${Math.floor(Math.random() * 1000000000)}`,
@@ -16,7 +16,7 @@ const toJSON = (response) => {
   return response.json();
 };
 
-export class API {
+class API {
   constructor() {
     this._endPoint = NetworkConfig.END_POINT;
     this._authorization = NetworkConfig.AUTHORIZATION;
@@ -79,3 +79,5 @@ export class API {
   }
 
 }
+
+export default API;

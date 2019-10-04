@@ -1,6 +1,6 @@
-import {AbstractComponent} from './abstract-component';
+import AbstractComponent from './abstract-component';
 
-export class FooterStatistic extends AbstractComponent {
+class FooterStatistic extends AbstractComponent {
   constructor(cards) {
     super();
     this._cards = cards;
@@ -11,3 +11,5 @@ export class FooterStatistic extends AbstractComponent {
   </section>`;
   }
 }
+
+export default FooterStatistic;

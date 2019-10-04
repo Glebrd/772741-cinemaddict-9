@@ -1,7 +1,7 @@
-import {ModelFilm} from './model-film';
+import ModelFilm from './model-film';
 import {createArrayFromObject} from './util.js';
 
-export class Provider {
+class Provider {
   constructor({api, store}) {
     this._api = api;
     this._store = store;
@@ -91,3 +91,4 @@ export class Provider {
   }
 }
 
+export default Provider;

@@ -1,5 +1,5 @@
-import {AbstractComponent} from './abstract-component';
-export class EmptyFilms extends AbstractComponent {
+import AbstractComponent from './abstract-component';
+class EmptyFilms extends AbstractComponent {
 
   getTemplate() {
     return `<section class="films">
@@ -10,3 +10,5 @@ export class EmptyFilms extends AbstractComponent {
 </main>`;
   }
 }
+
+export default EmptyFilms;

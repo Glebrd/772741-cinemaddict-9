@@ -1,5 +1,5 @@
-import {AbstractComponent} from './abstract-component';
-export class FilmsAll extends AbstractComponent {
+import AbstractComponent from './abstract-component';
+class FilmsAll extends AbstractComponent {
   getTemplate() {
     return `<section class="films-list">
           <h2 class="films-list__title visually-hidden">All movies. Upcoming</h2>
@@ -8,3 +8,5 @@ export class FilmsAll extends AbstractComponent {
         </section>`;
   }
 }
+
+export default FilmsAll;

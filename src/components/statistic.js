@@ -1,5 +1,5 @@
-import {AbstractComponent} from './abstract-component.js';
-import {UserRating} from '../components/user-rating.js';
+import AbstractComponent from './abstract-component.js';
+import UserRating from '../components/user-rating.js';
 import moment from 'moment';
 
 const FILTERS = [
@@ -14,7 +14,7 @@ const getMostFrequent = (genresCount) => {
   return Object.keys(genresCount).find((key) => genresCount[key] === Math.max(...Object.values(genresCount)));
 };
 
-export class Statistic extends AbstractComponent {
+class Statistic extends AbstractComponent {
   constructor({rank, watchedQuantity, watchedDuration, topGenre, activeFilter}) {
     super();
     this._rank = rank;
@@ -76,3 +76,5 @@ export class Statistic extends AbstractComponent {
     return getMostFrequent(genres);
   }
 }
+
+export default Statistic;
